@@ -1,0 +1,9 @@
+body{
+    color:blue;
+}
+
+#logo{
+    width:360px;
+    height:133px;
+    background-image: url(./images/logo.png);
+}

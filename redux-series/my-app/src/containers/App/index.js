@@ -1,6 +1,7 @@
 import React from 'react';
 import './index.css';
-import {connect} from 'react-redux';
+// import {connect} from 'react-redux';
+import {connect} from '../../my-react-redux';
 import * as actions from './action';
 import { bindActionCreators } from 'redux';
 
@@ -14,7 +15,7 @@ class App extends React.Component{
   render(){
     return (
       <div className="App">
-        <div>counter:{this.props.App.counter}</div>
+        <div>counter:{this.props.App && this.props.App.counter}</div>
         <div className="button" onClick={this.onIncrementClick}>increment</div>
         <div className="button" onClick={this.onDecrementClick}>decrement</div>
       </div>

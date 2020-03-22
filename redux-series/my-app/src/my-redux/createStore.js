@@ -2,7 +2,6 @@ export default function createStore(reducer,initialState){
     var currentReducer = reducer
     var currentState = initialState
     var currentListeners = []
-    var nextListeners = currentListeners
     var isDispatching = false;
 
     function getState() {
@@ -29,7 +28,15 @@ export default function createStore(reducer,initialState){
      * @param {*} action 
      */
     function dispatch(action){
-        currentState = currentReducer(currentState,action);
+        if(isDispatching){
+            return;
+        }
+        try{
+            isDispatching = true;
+            currentState = currentReducer(currentState,action);
+        } finally{
+            isDispatching= false;
+        }
         currentListeners.forEach(fn=>fn());
     }
 

@@ -5,7 +5,10 @@ export default function connect(mapStateProps,mapDispatchProps){
     return function(WrappedComponent){
         return class extends React.Component{
             static contextType = context;
-            state = {}
+            constructor(props, context) {
+                super(props);
+                this.state = mapStateProps(context.getState());
+            }
             shouldComponentUpdate(nextProps,nextState){
                 return true;
             }
@@ -15,7 +18,7 @@ export default function connect(mapStateProps,mapDispatchProps){
                     const newState = mapStateProps(store.getState());
                     this.setState(newState);
                 });
-                store.dispatch({type:'@iniiiit'})
+                // store.dispatch({type:'@iniiiit'})
             }
             componentWillUnmount(){
                 this.unsubscribe();

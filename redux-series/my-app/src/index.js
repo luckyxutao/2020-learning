@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 // import { createStore, applyMiddleware } from 'redux';
 // import { Provider } from 'react-redux';
-import { createStore } from './my-redux'
+import { createStore,applyMiddleware } from './my-redux'
 import { Provider } from './my-react-redux';
 import combinedReducers from './containers/reducers';
 import './index.css';
@@ -25,7 +25,7 @@ function myLogger(store) {
   }
 }
 
-const store = createStore(combinedReducers);
+const store = createStore(combinedReducers,applyMiddleware(thunk,myLogger));
 
 
 ReactDOM.render(

@@ -1,8 +1,10 @@
 
-export function bindActionCreators(actionCreators,dispatch){
+export default function bindActionCreators(actionCreators,dispatch){
     const boundActionCreators = {};
     for(let key in actionCreators){
-        boundActionCreators[key] = bindActionCreator(actionCreators[i],dispatch);
+        if(actionCreators.hasOwnProperty(key)){
+            boundActionCreators[key] = bindActionCreator(actionCreators[key],dispatch);
+        }
     }
     return boundActionCreators;
 }
@@ -12,15 +14,3 @@ function bindActionCreator(actionCreator,dispatch){
         return dispatch(actionCreator.apply(this,arguments))
     }
 }
-
-// export function increment(){
-//     return {
-//         type : 'INCREMENT'
-//     };
-// }
-
-// export function decrement(){
-//     return {
-//         type : 'DECEREMENT'
-//     }
-// }

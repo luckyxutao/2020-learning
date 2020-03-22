@@ -1,4 +1,12 @@
-export default function createStore(reducer,initialState){
+export default function createStore(reducer,initialState,enhancer){
+    if(typeof initialState === 'function' && enhancer === undefined){
+        enhancer = initialState
+        initialState = undefined
+    }
+    if(typeof enhancer === 'function'){
+        return enhancer(createStore)(reducer,initialState);
+    }
+
     var currentReducer = reducer
     var currentState = initialState
     var currentListeners = []
@@ -39,7 +47,9 @@ export default function createStore(reducer,initialState){
         }
         currentListeners.forEach(fn=>fn());
     }
-
+    dispatch({
+        type : '@action_init'
+    });
     return {
         getState,
         subscribe,

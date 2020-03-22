@@ -1,9 +1,10 @@
 import React from 'react';
 import './index.css';
 // import {connect} from 'react-redux';
+// import { bindActionCreators } from 'redux';
 import {connect} from '../../my-react-redux';
 import * as actions from './action';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators } from '../../my-redux';
 
 class App extends React.Component{
   onIncrementClick=()=>{

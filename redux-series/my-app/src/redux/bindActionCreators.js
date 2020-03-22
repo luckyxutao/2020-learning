@@ -2,7 +2,7 @@
 export function bindActionCreators(actionCreators,dispatch){
     const boundActionCreators = {};
     for(let key in actionCreators){
-        boundActionCreators[key] = bindActionCreator(actionCreators[i],dispatch));
+        boundActionCreators[key] = bindActionCreator(actionCreators[i],dispatch);
     }
     return boundActionCreators;
 }

@@ -1,58 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createStore, combineReducers } from './redux'
+// import { createStore, combineReducers } from './redux'
+import { createStore } from 'redux';
+import {Provider} from 'react-redux';
+import combinedReducers from './containers/reducers';
 import './index.css';
-import App from './App';
+import App from './containers/App';
+
+const store = createStore(combinedReducers);
+
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <Provider store = {store}>
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  </Provider>,
   document.getElementById('root')
 );
-
-function counter(state = 0, action) {
-  switch (action.type) {
-    case 'INCREMENT':
-      return state + 1
-    case 'DECREMENT':
-      return state - 1
-    default:
-      return state
-  }
-}
-
-function search(state={},action){
-  switch(action.type){
-    case 'show':
-      return {
-        ...state,
-        show : true
-      };
-    case 'hide':
-      return {
-        ...state,
-        show : false
-      };
-    default:
-      return state;
-  }
-}
-
-const reducer = combineReducers({
-  search,
-  counter
-});
-
-let store = createStore(reducer);
-
-const unscribe = store.subscribe(() => console.log(store.getState()))
-
-// // The only way to mutate the internal state is to dispatch an action.
-// // The actions can be serialized, logged or stored and later replayed.
-store.dispatch({ type: 'INCREMENT' })
-// 1
-store.dispatch({ type: 'INCREMENT' })
-// 2
-store.dispatch({ type: 'show' })
-// 1

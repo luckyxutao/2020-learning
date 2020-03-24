@@ -133,6 +133,7 @@ Promise.deferred = Promise.defer = function () {
 }
 
 Promise.race = function(arr){
+    let len = arr.length;
     return new Promise((resolve,reject)=>{
         for(let i=0;i<len;i++){
             arr[i].then(res=>{
@@ -143,7 +144,11 @@ Promise.race = function(arr){
         }
     });
 }
-
+Promise.resolve = function(value){
+    return new Promise((resolve,reject)=>{
+        resolve(value);
+    })
+}
 Promise.all = function(arr){
     let len = arr.length;
     let results = [];

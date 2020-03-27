@@ -9,8 +9,7 @@
 * 所以，设置好exclude和include可以优化打包时间。
 
 ### webpackBundle-analyzer
-a.js //jQuery
-b.js //jQuery
+是一个webpack的插件，需要配合webpack和webpack-cli一起使用。这个插件的功能是生成代码分析报告，帮助提升代码质量和网站性能。
 ### 费时分析
 speed-measure-webpack-plugin
 ### 第三方库处理
@@ -127,9 +126,10 @@ import d from './d';
 console.log(d)
 ```
 ### Tree-shaking&& scope-hoisting
-* tree-shaking 默认只支持 es6语法， 静态导入
+* tree-shaking 默认只支持 es6语法静态导入，不支持require等
 * 生产环境默认支持,dev环境不支持
-* 不支持require等
+* 确保没有 compiler 将 ES2015 模块语法转换为 CommonJS 模块
+* 在项目 package.json 文件中，添加一个 "sideEffects" 属性。
 ```javascript
 if(){
     Require(‘..aaaa.js’)

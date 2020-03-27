@@ -16,13 +16,6 @@ module.exports = {
             path : path.resolve(__dirname,'dll/manifest.json')
         })
     ]
-    // ,
-    // output:{
-    //     library:'calc',//放全局变量
-    //     libraryTarget:'commonjs2', //默认是var,commonjs, commonjs2, umd this
-    //     filename : 'calc.js',
-    //     path: path.resolve(__dirname,'dll')
-    // }
 }
 
 // 目前是为了将calc打包成node

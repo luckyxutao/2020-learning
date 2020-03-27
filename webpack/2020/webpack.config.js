@@ -11,18 +11,19 @@ const DLLReferencePlugin = require('webpack').DllReferencePlugin;
 const SpeedMeasureWebpackPluin = require('speed-measure-webpack-plugin');
 const smw = new SpeedMeasureWebpackPluin;
 module.exports = (env)=>{
-    return smw.wrap({
+    return {
         mode:env,
-        // entry : './src/index.js',
-        entry:{
-            "a" : './src/export.a.js',
-            "b" : './src/export.b.js'
-        },
+        entry : './src/index.js',
+        // entry:{
+        //     "a" : './src/export.a.js',
+        //     "b" : './src/export.b.js'
+        // },
         output:{
             filename : '[name].bundle.js',
             path : path.resolve(__dirname,'dist'),
             chunkFilename:'[name].min.js'
         },
+        devtool:'souce-map',
         // externals:{
         //     'jQuery':'$'
         // },
@@ -41,7 +42,7 @@ module.exports = (env)=>{
                 cacheGroups: {
                   react:{
                     test : /[\\/]node_modules[\\/](react)|(react-dom)/,
-                    priority:-2
+                    priority:3000
                   },
                   defaultVendors: {
                     test: /[\\/]node_modules[\\/]/,
@@ -106,27 +107,27 @@ module.exports = (env)=>{
             env!=='development' && new MiniCsExtractPlugin(),
             new HtmlWebpackPlugin({
                 template:'./src/index.html',
-                chunks:['a'],
+                // chunks:['a'],
                 filename:'index.html'
             }),
-            new HtmlWebpackPlugin({
-                template:'./src/index.html',
-                chunks:['b','a'],
-                chunksSortMode:'manual',
-                filename:'login.html'
-            }),
+            // new HtmlWebpackPlugin({
+            //     template:'./src/index.html',
+            //     chunks:['b','a'],
+            //     chunksSortMode:'manual',
+            //     filename:'login.html'
+            // }),
             new PurgeCssWebpackPlugin({
                 paths: glob.sync('./src/**/*',{nodir:true})
             }),
-            // // dll去找manifest.json文件
+            // // // dll去找manifest.json文件
             // new DLLReferencePlugin({
             //     manifest : path.resolve(__dirname,'./dll/manifest.json')
             // }),
-            // //将dllreact.js引入到html
+            // // //将dllreact.js引入到html
             // new AddAssetHtmlPlugin({
             //     filepath : path.resolve(__dirname,'./dll/react.dll.js')
             // }),
-            env!=='development' && new BundleAnalyzerPlugin()
+            // env!=='development' && new BundleAnalyzerPlugin()
         ].filter(Boolean)
-    });
+    };
 }

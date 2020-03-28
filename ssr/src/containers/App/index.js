@@ -14,6 +14,7 @@ class App extends React.Component {
   //   await this.props.fetchBooks({ page: 1 })
   // }
   componentDidMount(){
+    // this.props.fetchBooks({ page: 1 })
   }
   //此方法用一初次异步请求数据
   static getInitialProps(store){
@@ -27,7 +28,6 @@ class App extends React.Component {
   }
   render() {
     const { list} = this.props.App;
-    console.log(this.props)
     if(!list){
       return null;
     }

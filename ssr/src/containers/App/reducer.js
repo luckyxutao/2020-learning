@@ -7,7 +7,6 @@ export default function counter(state = initState, action) {
     switch (action.type) {
       case actionTypes.SAVE_LOCAL:
         const { data:{list},query} = action;
-        debugger
         return {
           ...state,
           list

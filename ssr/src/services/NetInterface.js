@@ -1,16 +1,21 @@
-const axios = require('axios');
+const createAxios = require('./request').default;
 
 function sendRequest(requestData) {
-    return axios(requestData).then(res => {
+    const res = createAxios();
+    return res.request(requestData).then(res => {
         return res.data;
     })
 }
-const urlHost = 'https://hy.travel.qunar.com';
 module.exports = {
-    fetchBooks: function (data) {
+    fetchBooks: function (params) {
         return sendRequest({
-            url: `${urlHost}/api/book/search`,
-            data
+            url: '/api/book/search',
+            params
         })
+    },
+    fetchBooks2: function (params) {
+        sendRequest({
+            url:'http://localhost:3001/cross/1'
+        });
     }
 }

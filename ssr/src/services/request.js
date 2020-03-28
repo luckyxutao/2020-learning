@@ -4,7 +4,7 @@ export default function createAxios() {
     if (!axiosCreator) {
         const isServer = typeof window === 'undefined';
         const config = {
-            baseURL: isServer ? 'https://hy.travel.qunar.com' : '/proxy'
+            baseURL: isServer ? 'xxxxxx' : '/proxy'
         };
         if (isServer) {
             config['headers'] = {

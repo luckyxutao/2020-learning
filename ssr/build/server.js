@@ -26777,7 +26777,7 @@ app.use(proxy({
   map: function map(path) {
     return path.replace(/^\/proxy/, '');
   },
-  host: 'https://hy.travel.qunar.com',
+  host: 'https://xxxxxxxxx',
   // proxy alicdn.com...
   match: /^\/proxy\// // ...just the /static folder
 
@@ -26950,7 +26950,7 @@ function createAxios() {
   if (!axiosCreator) {
     var isServer = typeof window === 'undefined';
     var config = {
-      baseURL: isServer ? 'https://hy.travel.qunar.com' : '/proxy'
+      baseURL: isServer ? 'xxxxxx' : '/proxy'
     };
 
     if (isServer) {

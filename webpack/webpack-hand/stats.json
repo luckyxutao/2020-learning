@@ -1,0 +1,334 @@
+{
+  "errors": [],
+  "warnings": [],
+  "version": "4.42.1",
+  "hash": "e8016cf2fde251b913bd",
+  "time": 47,
+  "builtAt": 1585294154768,
+  "publicPath": "",
+  "outputPath": "/Users/xutao/work/demos/2020-learning/webpack/webpack-hand/dist",
+  "assetsByChunkName": {
+    "main": "bundle.js"
+  },
+  "assets": [
+    {
+      "name": "0.bundle.js",
+      "size": 605,
+      "chunks": [
+        0
+      ],
+      "chunkNames": [],
+      "info": {},
+      "emitted": true
+    },
+    {
+      "name": "bundle.js",
+      "size": 8949,
+      "chunks": [
+        "main"
+      ],
+      "chunkNames": [
+        "main"
+      ],
+      "info": {},
+      "emitted": true
+    }
+  ],
+  "filteredAssets": 0,
+  "entrypoints": {
+    "main": {
+      "chunks": [
+        "main"
+      ],
+      "assets": [
+        "bundle.js"
+      ],
+      "children": {},
+      "childAssets": {}
+    }
+  },
+  "namedChunkGroups": {
+    "main": {
+      "chunks": [
+        "main"
+      ],
+      "assets": [
+        "bundle.js"
+      ],
+      "children": {},
+      "childAssets": {}
+    }
+  },
+  "chunks": [
+    {
+      "id": 0,
+      "rendered": true,
+      "initial": false,
+      "entry": false,
+      "size": 95,
+      "names": [],
+      "files": [
+        "0.bundle.js"
+      ],
+      "hash": "a67eb449a87a173f5cf5",
+      "siblings": [],
+      "parents": [
+        "main"
+      ],
+      "children": [],
+      "childrenByOrder": {},
+      "modules": [
+        {
+          "id": "./src/title.js",
+          "identifier": "/Users/xutao/work/demos/2020-learning/webpack/webpack-hand/src/title.js",
+          "name": "./src/title.js",
+          "index": 1,
+          "index2": 1,
+          "size": 95,
+          "cacheable": true,
+          "built": true,
+          "optional": false,
+          "prefetched": false,
+          "chunks": [
+            0
+          ],
+          "issuer": "/Users/xutao/work/demos/2020-learning/webpack/webpack-hand/src/index.js",
+          "issuerId": "./src/index.js",
+          "issuerName": "./src/index.js",
+          "issuerPath": [
+            {
+              "id": "./src/index.js",
+              "identifier": "/Users/xutao/work/demos/2020-learning/webpack/webpack-hand/src/index.js",
+              "name": "./src/index.js",
+              "profile": {
+                "factory": 13,
+                "building": 7
+              }
+            }
+          ],
+          "profile": {
+            "factory": 2,
+            "building": 3
+          },
+          "failed": false,
+          "errors": 0,
+          "warnings": 0,
+          "assets": [],
+          "reasons": [
+            {
+              "moduleId": "./src/index.js",
+              "moduleIdentifier": "/Users/xutao/work/demos/2020-learning/webpack/webpack-hand/src/index.js",
+              "module": "./src/index.js",
+              "moduleName": "./src/index.js",
+              "type": "import()",
+              "userRequest": "./title",
+              "loc": "8:4-21"
+            }
+          ],
+          "providedExports": [
+            "default",
+            "add"
+          ],
+          "optimizationBailout": [],
+          "depth": 1,
+          "source": "export default 'aaaa'\nexport function add(a,b){\n    return a + b;\n}\n// module.exports = 'title'"
+        }
+      ],
+      "filteredModules": 0,
+      "origins": [
+        {
+          "moduleId": "./src/index.js",
+          "module": "/Users/xutao/work/demos/2020-learning/webpack/webpack-hand/src/index.js",
+          "moduleIdentifier": "/Users/xutao/work/demos/2020-learning/webpack/webpack-hand/src/index.js",
+          "moduleName": "./src/index.js",
+          "loc": "8:4-21",
+          "request": "./title",
+          "reasons": []
+        }
+      ]
+    },
+    {
+      "id": "main",
+      "rendered": true,
+      "initial": true,
+      "entry": true,
+      "size": 394,
+      "names": [
+        "main"
+      ],
+      "files": [
+        "bundle.js"
+      ],
+      "hash": "86c31c5d63c63c2b0432",
+      "siblings": [],
+      "parents": [],
+      "children": [
+        0
+      ],
+      "childrenByOrder": {},
+      "modules": [
+        {
+          "id": "./src/index.js",
+          "identifier": "/Users/xutao/work/demos/2020-learning/webpack/webpack-hand/src/index.js",
+          "name": "./src/index.js",
+          "index": 0,
+          "index2": 0,
+          "size": 394,
+          "cacheable": true,
+          "built": true,
+          "optional": false,
+          "prefetched": false,
+          "chunks": [
+            "main"
+          ],
+          "issuer": null,
+          "issuerId": null,
+          "issuerName": null,
+          "issuerPath": null,
+          "profile": {
+            "factory": 13,
+            "building": 7
+          },
+          "failed": false,
+          "errors": 0,
+          "warnings": 0,
+          "assets": [],
+          "reasons": [
+            {
+              "moduleId": null,
+              "moduleIdentifier": null,
+              "module": null,
+              "moduleName": null,
+              "type": "single entry",
+              "userRequest": "./src/index.js",
+              "loc": "main"
+            }
+          ],
+          "providedExports": null,
+          "optimizationBailout": [],
+          "depth": 0,
+          "source": "let button = document.createElement('button');\nbutton.innerHTML = '点我';\nbutton.addEventListener('click',()=>{\n    // 动态导入 类比路由的懒加载 import\n    // 默认会产生代码分割\n    // 使用jsonp异步加载 ./calc\n    // webpackChunkName改 异步文件名\n    import('./title').then(res=>{\n        console.log(res.default)\n    })\n});\ndocument.body.appendChild(button);"
+        }
+      ],
+      "filteredModules": 0,
+      "origins": [
+        {
+          "module": "",
+          "moduleIdentifier": "",
+          "moduleName": "",
+          "loc": "main",
+          "request": "./src/index.js",
+          "reasons": []
+        }
+      ]
+    }
+  ],
+  "modules": [
+    {
+      "id": "./src/index.js",
+      "identifier": "/Users/xutao/work/demos/2020-learning/webpack/webpack-hand/src/index.js",
+      "name": "./src/index.js",
+      "index": 0,
+      "index2": 0,
+      "size": 394,
+      "cacheable": true,
+      "built": true,
+      "optional": false,
+      "prefetched": false,
+      "chunks": [
+        "main"
+      ],
+      "issuer": null,
+      "issuerId": null,
+      "issuerName": null,
+      "issuerPath": null,
+      "profile": {
+        "factory": 13,
+        "building": 7
+      },
+      "failed": false,
+      "errors": 0,
+      "warnings": 0,
+      "assets": [],
+      "reasons": [
+        {
+          "moduleId": null,
+          "moduleIdentifier": null,
+          "module": null,
+          "moduleName": null,
+          "type": "single entry",
+          "userRequest": "./src/index.js",
+          "loc": "main"
+        }
+      ],
+      "providedExports": null,
+      "optimizationBailout": [],
+      "depth": 0,
+      "source": "let button = document.createElement('button');\nbutton.innerHTML = '点我';\nbutton.addEventListener('click',()=>{\n    // 动态导入 类比路由的懒加载 import\n    // 默认会产生代码分割\n    // 使用jsonp异步加载 ./calc\n    // webpackChunkName改 异步文件名\n    import('./title').then(res=>{\n        console.log(res.default)\n    })\n});\ndocument.body.appendChild(button);"
+    },
+    {
+      "id": "./src/title.js",
+      "identifier": "/Users/xutao/work/demos/2020-learning/webpack/webpack-hand/src/title.js",
+      "name": "./src/title.js",
+      "index": 1,
+      "index2": 1,
+      "size": 95,
+      "cacheable": true,
+      "built": true,
+      "optional": false,
+      "prefetched": false,
+      "chunks": [
+        0
+      ],
+      "issuer": "/Users/xutao/work/demos/2020-learning/webpack/webpack-hand/src/index.js",
+      "issuerId": "./src/index.js",
+      "issuerName": "./src/index.js",
+      "issuerPath": [
+        {
+          "id": "./src/index.js",
+          "identifier": "/Users/xutao/work/demos/2020-learning/webpack/webpack-hand/src/index.js",
+          "name": "./src/index.js",
+          "profile": {
+            "factory": 13,
+            "building": 7
+          }
+        }
+      ],
+      "profile": {
+        "factory": 2,
+        "building": 3
+      },
+      "failed": false,
+      "errors": 0,
+      "warnings": 0,
+      "assets": [],
+      "reasons": [
+        {
+          "moduleId": "./src/index.js",
+          "moduleIdentifier": "/Users/xutao/work/demos/2020-learning/webpack/webpack-hand/src/index.js",
+          "module": "./src/index.js",
+          "moduleName": "./src/index.js",
+          "type": "import()",
+          "userRequest": "./title",
+          "loc": "8:4-21"
+        }
+      ],
+      "providedExports": [
+        "default",
+        "add"
+      ],
+      "optimizationBailout": [],
+      "depth": 1,
+      "source": "export default 'aaaa'\nexport function add(a,b){\n    return a + b;\n}\n// module.exports = 'title'"
+    }
+  ],
+  "filteredModules": 0,
+  "logging": {
+    "webpack.buildChunkGraph.visitModules": {
+      "entries": [],
+      "filteredEntries": 5,
+      "debug": false
+    }
+  },
+  "children": []
+}

@@ -1,0 +1,21 @@
+{
+  "name": "webpack-last",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-generator": "^6.26.1",
+    "babel-traverse": "^6.26.0",
+    "babel-types": "^6.26.0",
+    "babylon": "^6.18.0",
+    "ejs": "^3.0.1",
+    "tapable": "^1.1.3",
+    "webpack": "^4.42.1"
+  }
+}

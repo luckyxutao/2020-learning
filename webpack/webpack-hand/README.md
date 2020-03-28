@@ -8,3 +8,9 @@
         __webpack_require__.r(ns);
         Object.defineProperty(ns, 'default', { enumerable: true, value: value });
 ### 为什么要保留第oldArrayPush
+
+
+Stats对象
+modules 记录了所有解析后的模块
+chunks 所有chunk
+assets 所有要生成的文件

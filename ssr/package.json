@@ -4,14 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev:server": "nodemon ./build/server.js",
-    "dev:build": "webpack --config webpack.config.js --watch"
+    "dev:server": "nodemon build/server.js",
+    "dev:build:server": "webpack --config webpack.server.js --watch",
+    "dev:build:client": "webpack --config webpack.client.js --watch"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "koa": "^2.11.0",
+    "koa-router": "^8.0.8",
+    "koa-static": "^5.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },

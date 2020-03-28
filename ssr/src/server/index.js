@@ -1,10 +1,15 @@
 import React from 'react';
 const Koa = require('koa');
-import {renderToString} from 'react-dom/server';
-import Home from '../containers/Home';
+const KoaRouter = require('koa-router');
+const serve = require('koa-static');
+const path = require('path');
+import { renderToString } from 'react-dom/server';
+import Counter from '../containers/Counter';
 const app = new Koa();
+var router = new KoaRouter();
+app.use(serve(path.resolve('.')));
 
-app.use(async ctx => {
+router.get('/app', (ctx,next) => {
     const htmlTemplate = `
     <!DOCTYPE html>
     <html lang="en">
@@ -14,10 +19,11 @@ app.use(async ctx => {
         <title>Document</title>
     </head>
     <body>
-        <div id="root">${renderToString(<Home/>)}</div>
+        <div id="root">${renderToString(<Counter />)}</div>
+        <script src="/static/client.js"></script>
     </body>
     </html>`;
     ctx.body = htmlTemplate;
 });
 
-app.listen(3000);
+app.use(router.routes()).listen(3000);

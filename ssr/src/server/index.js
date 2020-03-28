@@ -1,15 +1,23 @@
 import React from 'react';
 const Koa = require('koa');
 const KoaRouter = require('koa-router');
+import {StaticRouter} from 'react-router-dom';
 const serve = require('koa-static');
 const path = require('path');
 import { renderToString } from 'react-dom/server';
-import Counter from '../containers/Counter';
+import routes from '../routes';
 const app = new Koa();
 var router = new KoaRouter();
 app.use(serve(path.resolve('.')));
 
-router.get('/app', (ctx,next) => {
+router.get('/*', (ctx,next) => {
+    debugger
+    const context ={};
+    const html = renderToString(
+        <StaticRouter context={context} location={ctx.path}>
+            {routes}
+        </StaticRouter>
+    )
     const htmlTemplate = `
     <!DOCTYPE html>
     <html lang="en">
@@ -19,7 +27,7 @@ router.get('/app', (ctx,next) => {
         <title>Document</title>
     </head>
     <body>
-        <div id="root">${renderToString(<Counter />)}</div>
+        <div id="root">${html}</div>
         <script src="/static/client.js"></script>
     </body>
     </html>`;

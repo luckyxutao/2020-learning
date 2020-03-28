@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev:server": "nodemon build/server.js",
+    "debug": "nodemon node --inspect-brk build/server.js",
     "dev:build:server": "webpack --config webpack.server.js --watch",
     "dev:build:client": "webpack --config webpack.client.js --watch"
   },
@@ -16,7 +17,8 @@
     "koa-router": "^8.0.8",
     "koa-static": "^5.0.0",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "react-router-dom": "^5.1.2"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",

@@ -1,10 +1,20 @@
-import React,{Fragment} from 'react';
-import Counter from '../containers/Counter';
-import Home from '../containers/Home';
+import React, { Fragment } from 'react';
+import App from '../containers/App';
+import Search from '../containers/Search';
 import { Route } from 'react-router-dom';
-export default (
-    <Fragment>
-        <Route path="/home" component={Home}></Route>
-        <Route path="/counter" component={Counter}></Route>
-    </Fragment>
-)
+export default [{
+    path:"/home",
+    exact:true,
+    component: App,
+    getInitialProps: App.getInitialProps
+}, {
+    path: "/search",
+    component: Search,
+    getInitialProps: Search.getInitialProps
+}];
+// export default (
+//     <Fragment>
+//         <Route path="/home" exact component={App}></Route>
+//         <Route path="/search" component={Search}></Route>]
+//     </Fragment>
+// )

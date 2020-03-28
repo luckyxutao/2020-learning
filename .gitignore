@@ -15,7 +15,7 @@ yarn.lock
 dist
 # production
 /build
-
+**/*/build
 # misc
 .DS_Store
 .env.local

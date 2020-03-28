@@ -16,9 +16,33 @@ class NormalModule {
         this._source;
 
     }
+    getSource(request,compilation){
+        let source = compilation.inputFileSystem.readFileSync(this.request,'utf8');
+        let { module: { rules } } = compilation.options;
+        for (let i = 0; i < rules.length; i++) {
+            let rule = rules[i];
+            if (rule.test.test(request)) {
+                let loaders = rule.use;
+                let loaderIndex = loaders.length - 1;
+                let iterateLoaders = ()=>{
+                    let loaderName = loaders[loaderIndex];
+                    let loader = require(path.resolve(this.context, 'loaders', loaderName));
+                    source = loader(source);
+                    if (loaderIndex > 0) {
+                        loaderIndex--;
+                        iterateLoaders();
+                    }
+                }
+                iterateLoaders();
+                break;
+            }
+        }
+        return source;
+    }
     build(compilation) {
         // 通过request读取文件内容
-        let originSource = compilation.inputFileSystem.readFileSync(this.request, 'utf8');
+        let originSource = this.getSource(this.request,compilation);
+        // let originSource = compilation.inputFileSystem.readFileSync(this.request, 'utf8');
         // 通过babylon6 转为 ast 抽象语法树
         const ast = babylon.parse(originSource);
         //

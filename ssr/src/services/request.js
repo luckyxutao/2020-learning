@@ -4,7 +4,7 @@ export default function createAxios() {
     if (!axiosCreator) {
         const isServer = typeof window === 'undefined';
         const config = {
-            baseURL: isServer ? 'xxxxxx' : '/proxy'
+            baseURL: isServer ? 'https://xxxx' : '/proxy'
         };
         if (isServer) {
             config['headers'] = {

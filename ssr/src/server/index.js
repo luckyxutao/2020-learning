@@ -12,7 +12,7 @@ app.use(proxy({
     map: function(path) {
         return path.replace(/^\/proxy/,'');
     },
-    host:  'https://xxxxxxxxx', // proxy alicdn.com...
+    host:  'https://xxxx', // proxy alicdn.com...
     match: /^\/proxy\//        // ...just the /static folder
 }))
 router.get('/*', async(ctx, next) => {

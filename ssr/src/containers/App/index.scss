@@ -6,7 +6,11 @@
   height: 40vmin;
   pointer-events: none;
 }
-
+$nav-color: #F90;
+nav {
+  $width: 100px;
+  color: $nav-color;
+}
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;

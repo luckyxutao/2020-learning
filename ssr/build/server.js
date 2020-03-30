@@ -415,55 +415,205 @@ var Main = /*#__PURE__*/function (_React$Component) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Search; });
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "@babel/runtime/helpers/classCallCheck");
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "@babel/runtime/helpers/createClass");
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/possibleConstructorReturn */ "@babel/runtime/helpers/possibleConstructorReturn");
-/* harmony import */ var _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ "@babel/runtime/helpers/getPrototypeOf");
-/* harmony import */ var _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/inherits */ "@babel/runtime/helpers/inherits");
-/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react */ "react");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_5__);
-
-
-
-
-
-
-function _createSuper(Derived) { return function () { var Super = _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3___default()(Derived), result; if (_isNativeReflectConstruct()) { var NewTarget = _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3___default()(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2___default()(this, result); }; }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ "@babel/runtime/helpers/slicedToArray");
+/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 
  // import './index.css';
+// class Search extends React.Component {
+//   state = {
+//     number: 0
+//   }
+//   render() {
+//     return (
+//       <div className="App">
+//         <p>{this.state.number}</p>
+//         <div onClick={() => {
+//           this.setState({
+//             number: this.state.number + 1
+//           })
+//         }}>Search page</div>
+//       </div>
+//     );
+//   }
+// }
+// function Search2() {
+//   let [state, setState] = useState({ number: 0 });
+//   const alertNumber = () => {
+//     setTimeout(() => {
+//       alert(state.number)
+//     }, 3000);
+//   }
+//   return (
+//     <div>
+//       <p>{state.number}</p>
+//       <button onClick={() => {
+//         setState({
+//           number: state.number + 1
+//         })
+//       }}>addddddd</button>
+//       <button onClick={alertNumber}>alertNumber</button>
+//     </div>
+//   )
+// }
+// //函数式更新
+// //如果新的状态需要使用先前的状态计算出来，
+// function Search3() {
+//   let [state, setState] = useState({ number: 0 });
+//   const lazy = () => {
+//     setTimeout(() => {
+//       setState({
+//         number: state.number + 1
+//       })
+//     }, 3000);
+//   }
+//   function lazyFunction() {
+//     setTimeout(() => {
+//       setState(state => ({
+//         number: state.number + 1
+//       }))
+//     }, 3000);
+//   }
+//   return (
+//     <div>
+//       <p>{state.number}</p>
+//       <button onClick={() => {
+//         setState({
+//           number: state.number + 1
+//         })
+//       }}>addddddd</button>
+//       <button onClick={lazy}>lzay</button>
+//       <button onClick={lazyFunction}>lzayFunction</button>
+//     </div>
+//   )
+// }
+// //惰性初始state
+// //initialState 初始状态参数只会有组件初始渲染的时候调用 ，后续渲染会被忽略
+// function Search4() {
+//   let [state, setState] = useState(function () {
+//     console.log('初始状态') //只在初始时调用一次
+//     return { number: 0, name : '计数器' };
+//   });
+//   //状态不会自动合并，更新时需要传入完整的值
+//   // state之后新旧值没变的话是不会走render
+//   console.log('counter5 renderr');
+//   return (
+//     <div>
+//       <p>{state.number}{state.name}</p>
+//       <button onClick={() => {
+//         setState({
+//           ...state,
+//           number: state.number + 1
+//         })
+//       }}>加111111</button>
+//       <button onClick={() => {
+//         setState(state)
+//       }}>加xxxxxx</button>
+//     </div>
+//   )
+// }
+// // let lastAddClick;
+// function Search6() {
+//   let [number,setNumber] = useState(0);
+//   let [name,setName] = useState('zhufeng');
+//   // 会每次渲染的时候都 生成一个新的函数
+//   // 只有在[依赖的变量发生变化]的时候才会重新生成
+//   const addCLick = useCallback(()=>{
+//     setNumber(number+1)
+//   },[number]);//依赖的变量
+//   const changeName = useCallback(()=>{
+//     setName('taaaaaa')
+//   },[name]);
+//   console.log(lastAddClick === addCLick)
+//   lastAddClick = addCLick;
+//   return (
+//     <div>
+//       <p>{name}{number}</p>
+//       <button onClick={addCLick}>加111111</button>
+//       <button onClick={changeName}>改名</button>
+//     </div>
+//   )
+// }
+// function Child(props) {
+//   console.log('renderChild');
+//   return <button onClick={props.addClick}>{props.data.number}</button>
+// }
+// Child = memo(Child);
+// let lastAddClick;
+// let lastData;
+// function Search7() {
+//   let [number, setNumber] = useState(0);
+//   let [name, setName] = useState('zhufeng');
+//   const addClick = useCallback(() => setNumber(number+1), [number]);
+//   console.log(lastAddClick === addClick);
+//   lastAddClick = addClick;
+//   const data = useMemo(()=>({number}),[number]);
+//   console.log('lastData === data', lastData === data);
+//   lastData = data;
+//   return (
+//     <div>
+//       <input type="text" value={name} onChange={e => setName(e.target.value)} />
+//       <Child addClick={addClick} data={data} />
+//     </div>
+//   )
+// }
 
-var Search = /*#__PURE__*/function (_React$Component) {
-  _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_4___default()(Search, _React$Component);
+function Search8() {
+  var _useState = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(0),
+      _useState2 = _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0___default()(_useState, 2),
+      number = _useState2[0],
+      setNumber = _useState2[1];
 
-  var _super = _createSuper(Search);
+  var _useState3 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(true),
+      _useState4 = _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0___default()(_useState3, 2),
+      visible = _useState4[0],
+      setVisible = _useState4[1];
 
-  function Search() {
-    _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0___default()(this, Search);
-
-    return _super.apply(this, arguments);
+  if (11) {
+    Object(react__WEBPACK_IMPORTED_MODULE_1__["useEffect"])(function () {});
   }
 
-  _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1___default()(Search, [{
-    key: "render",
-    value: function render() {
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_5___default.a.createElement("div", {
-        className: "App"
-      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_5___default.a.createElement("div", null, "Search page"));
-    }
-  }]);
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("p", null, number), visible && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, "visible"));
+}
 
-  return Search;
-}(react__WEBPACK_IMPORTED_MODULE_5___default.a.Component);
+function App() {
+  var _useState5 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(0),
+      _useState6 = _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0___default()(_useState5, 2),
+      count = _useState6[0],
+      setCount = _useState6[1];
 
+  var _useState7 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(0),
+      _useState8 = _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0___default()(_useState7, 2),
+      dummy = _useState8[0],
+      setDummy = _useState8[1];
 
+  if (count === 1) {
+    Object(react__WEBPACK_IMPORTED_MODULE_1__["useEffect"])(function () {
+      console.log("I'm called on each render when count changes!");
+      return function () {
+        console.log("I'm called after component unmount!");
+      };
+    }, [count] // use effect will be called when count changes
+    );
+  }
+
+  function handleClick() {
+    setCount(count + 1);
+  }
+
+  function handleClickDummy() {
+    setDummy(dummy + 1);
+  }
+
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, "You clicked count ", count, " times!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, "You clicked dummy ", dummy, " times!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
+    onClick: handleClick
+  }, "Click me for rendering!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
+    onClick: handleClickDummy
+  }, "Click me for not render!"));
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (App);
 
 /***/ }),
 
@@ -578,7 +728,7 @@ app.use(proxy({
   map: function map(path) {
     return path.replace(/^\/proxy/, '');
   },
-  host: 'https://xxxx',
+  host: 'https://hy.travel.qunar.com',
   // proxy alicdn.com...
   match: /^\/proxy\// // ...just the /static folder
 
@@ -751,7 +901,7 @@ function createAxios() {
   if (!axiosCreator) {
     var isServer = typeof window === 'undefined';
     var config = {
-      baseURL: isServer ? 'https://xxxx' : '/proxy'
+      baseURL: isServer ? 'https://hy.travel.qunar.com' : '/proxy'
     };
 
     if (isServer) {
@@ -884,6 +1034,17 @@ module.exports = require("@babel/runtime/helpers/inherits");
 /***/ (function(module, exports) {
 
 module.exports = require("@babel/runtime/helpers/possibleConstructorReturn");
+
+/***/ }),
+
+/***/ "@babel/runtime/helpers/slicedToArray":
+/*!*******************************************************!*\
+  !*** external "@babel/runtime/helpers/slicedToArray" ***!
+  \*******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("@babel/runtime/helpers/slicedToArray");
 
 /***/ }),
 

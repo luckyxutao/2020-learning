@@ -7,6 +7,9 @@ button.addEventListener('click',()=>{
     // webpackChunkName改 异步文件名
     import('./title').then(res=>{
         console.log(res.default)
+    });
+    import('./ccc').then(res=>{
+        console.log(res.default)
     })
 });
 document.body.appendChild(button);

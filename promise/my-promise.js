@@ -152,11 +152,13 @@ Promise.resolve = function(value){
 Promise.all = function(arr){
     let len = arr.length;
     let results = [];
+    let count = 0;
     return new Promise((resolve,reject)=>{
         for(let i=0;i<len;i++){
             arr[i].then(res=>{
                 results[i] = res;
-                if(results.length === len){
+                count++;
+                if(count === len){
                     resolve(results);
                 }
             },err=>{

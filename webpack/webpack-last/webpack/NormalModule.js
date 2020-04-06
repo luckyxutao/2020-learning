@@ -41,8 +41,8 @@ class NormalModule {
     }
     build(compilation) {
         // 通过request读取文件内容
-        let originSource = this.getSource(this.request,compilation);
-        // let originSource = compilation.inputFileSystem.readFileSync(this.request, 'utf8');
+        // let originSource = this.getSource(this.request,compilation);
+        let originSource = compilation.inputFileSystem.readFileSync(this.request, 'utf8');
         // 通过babylon6 转为 ast 抽象语法树
         const ast = babylon.parse(originSource);
         //

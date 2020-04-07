@@ -1,7 +1,11 @@
 import { Component } from './ReactBaseClasses'
 import {createElement} from './ReactElement'
+import {map} from './ReactChildren';
 const React = {
-    createElement
+    createElement,
+    Children:{
+        map
+    }
 };
 
 export {

@@ -6,7 +6,6 @@ const RESEVED_PROOPS = {
     __self: true,
 }
 export function createElement(type, config, children) {
-    debugger
     let propName;
     const props = {};
     let key = null;
@@ -51,7 +50,7 @@ export function createElement(type, config, children) {
         type, key, ref, self,source,owner, props
     )
 }
-function ReactElement(type, key, ref, _self, _source, _owner, props) {
+export function ReactElement(type, key, ref, _self, _source, _owner, props) {
     const element = {
         $$typeof: REACT_ELEMENT_TYPE,
         type,

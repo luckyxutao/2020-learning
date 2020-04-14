@@ -1,5 +1,5 @@
 import ReactCurrentOwner from "./ReactCurrentOwner";
-import { REACT_ELEMENT_TYPE } from '../shared/ReactSymbols'
+import { REACT_ELEMENT_TYPE,TEXT } from '../shared/ReactSymbols'
 const RESEVED_PROOPS = {
     key: true,
     ref: true,
@@ -51,8 +51,19 @@ export function createElement(type, config, children) {
     )
 }
 export function ReactElement(type, key, ref, _self, _source, _owner, props) {
+    let $$typeof;
+    if(typeof type === 'string'){
+        $$typeof = REACT_ELEMENT_TYPE;
+    }
+    // props.children = props.children.map(item=>{
+    //     if(typeof item === 'object'){
+    //         return item; 
+    //     } else {
+    //         return {$$typeof:TEXT, type:TEXT,content:item}
+    //     }
+    // });
     const element = {
-        $$typeof: REACT_ELEMENT_TYPE,
+        $$typeof,
         type,
         key,
         ref,

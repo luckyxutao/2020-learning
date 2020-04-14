@@ -1,5 +1,4 @@
-
-let emptyObject={};
+const emptyObject = {};
 class Component{
     constructor(props,context){
         this.props = props;
@@ -7,6 +6,14 @@ class Component{
         this.refs = emptyObject;
     }
 }
-//都会编译成function,区分函数式组件还是class组件
 Component.prototype.isReactComponent = {};
-export {Component}
+
+class PureComponent extends Component{
+
+}
+PureComponent.prototype.isPureComponent = true;
+
+export{
+    PureComponent,
+    Component
+};

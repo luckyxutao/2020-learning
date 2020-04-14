@@ -3,6 +3,7 @@ import {createElement} from './ReactElement'
 import {map} from './ReactChildren';
 const React = {
     createElement,
+    Component,
     Children:{
         map
     }

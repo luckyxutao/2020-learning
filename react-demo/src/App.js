@@ -1,53 +1,52 @@
-import React, { useEffect, useReducer, useCallback } from "react";
+import React from "react";
+import { render } from "react-dom";
 
-import logo from './logo.svg';
-import './App.css';
-let initialState = {
-  number: 0
-};
-const INCREMENT = 'INCREMENT';
-const DECREMENT = 'DECREMENT';
-function reducer(state, action) {
-  switch (action.type) {
-    case INCREMENT: {
-      return { number: state.number + 1 };
-    };
-    case DECREMENT: {
-      return { number: state.number - 1 };
-    }
-    default:
-      return state;
-  }
-}
-//叫自定义hooks
-function useState(initialState) {
-  const reducer = useCallback((state,action)=>action.payload);
-  let [state, dispatch] = useReducer(reducer, initialState);
-  function setState(payload) {
-    dispatch({ payload });
-  }
-  return [state,setState];
-}
-function useLogger(reducer,initialState){
-  let [state,dispatch] = useReducer(reducer,initialState);
-  function loggerDispatch(action){
-    console.log('老状态',state);
-    dispatch(action);
-  }
-  useEffect(()=>console.log('新状态',state))
-  return [state,loggerDispatch]
-}
-function App() {
-  let [state, dispatch] = useLogger(reducer, initialState);
+const CountContext = React.createContext(1);
 
-  return (
-    <>
-      <div>You clicked count {state.number} times!</div>
-      <button onClick={() => dispatch({
-        type: INCREMENT
-      })}>Click me for rendering!</button>
-    </>
-  );
+function Button(props) {
+  console.log("button render");
+  return <button {...props}>{props.count}</button>;
 }
 
-export default App;
+class CountedButton extends React.Component {
+  static contextType = CountContext;
+  render() {
+    console.log('counterButton rendered')
+    return <Button {...this.props} count={this.context.count} />;
+  }
+}
+
+class Toolbar extends React.PureComponent {
+  render() {
+    console.log("Toolbar render");
+    return (
+      <div>
+        <CountedButton />
+      </div>
+    );
+  }
+}
+
+export default class App extends React.Component {
+  state = {
+    updateCount: 0
+  };
+
+  render() {
+    console.log("app render", this.state.updateCount);
+    return (
+      <CountContext.Provider value={{ count: this.state.updateCount }}>
+        <Toolbar />
+        <button
+          onClick={() =>
+            this.setState(state => ({
+              updateCount: state.updateCount + 1
+            }))
+          }
+        >
+          update
+        </button>
+      </CountContext.Provider>
+    );
+  }
+}

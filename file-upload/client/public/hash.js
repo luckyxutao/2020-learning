@@ -15,6 +15,10 @@ self.onmessage = async (event) => {
             }
         });
     }));
+    // let buffers = await Promise.all(partList.map(({ chunk, size }) => {
+    //     debugger
+    //     return chunk.ArrayBuffer;
+    // }));
     buffers.forEach(buffer => {
         spark.append(buffer);
     });

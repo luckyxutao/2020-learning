@@ -1,4 +1,7 @@
 * npm run jest
+###
+File->多个Blob=>读取Blob=>转成ArrayBuffer=>spark计算哈希值
+
 
 ### 临时目录
 '/var/folders/b8/_lp952nd27v0zbgvzj71m0w80000gn/T/S0i5AeQq7acM8wcxzqG-Almh.jpeg'

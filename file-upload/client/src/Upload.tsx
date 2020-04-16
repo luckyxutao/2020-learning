@@ -1,9 +1,22 @@
 import React, { ChangeEvent, useState, useEffect } from 'react';
 import { Row, Col, Input, Button, message } from 'antd';
 import { request } from './utils';
+
+const SIZE = 1024 * 1024; //1M
+
+interface Part {
+    chunk: Blob,
+    filename?:string,
+    chunkName?:string,
+    size: number
+}
+
 function Upload() {
     let [currentFile, setCurrentFile] = useState<File>();
     let [objectURL, setObjectURL] = useState('');
+    let [hashPercent, setHashPercent] = useState(0);
+    let [partList,setPartList] = useState<Part[]>([]);
+    let [filename,setFileName] = useState('');
     useEffect(() => {
         if (currentFile) {
             let objectURL = window.URL.createObjectURL(currentFile);
@@ -13,29 +26,61 @@ function Upload() {
             };
         }
     }, [currentFile]);
+
     function handleChange(event: ChangeEvent<HTMLInputElement>) {
         let file: File = event.target.files![0];
         console.log(file);
         setCurrentFile(file);
     }
+
+    function calculateHash(partList: Part[]) {
+        return new Promise((resolve, reject) => {
+            let worker = new Worker('/hash.js');
+            worker.postMessage({ partList });
+            worker.onmessage = (event) => {
+                let { percent: _a, hash } = event.data;
+                if (hash) {
+                    resolve(hash);
+                }
+            };
+        });
+    }
+//851a368cefebf1f35e7fb9bacdc74581
     async function handleUpload() {
         if (!currentFile) {
             return message.error('尚未选择文件')
         }
-        const formData = new FormData();
-        if (allowUpload(currentFile)) {
-            formData.append('chunk', currentFile);
-            formData.append('filename', currentFile.name);
-        }
-        const result = await request({
-            url: '/upload',
-            method: 'POST',
-            data: formData,
-            headers: {}
+        let partials: Part[] = createChunks(currentFile);
+        //通过webworker子进程计算哈希
+        let fileHasn = await calculateHash(partials);
+        debugger
+        let lastDotIndex = currentFile.name.lastIndexOf('.');
+        let extName = currentFile.name.slice(lastDotIndex);
+        let filename = `${fileHasn}${extName}`;
+        setFileName(filename);
+        partials.forEach((item,index)=>{
+            item.filename = filename;
+            item.chunkName = `${filename}-${index}`;
         });
-        console.log('result', result);
-        message.info('上传成功');
+        setPartList(partials);
+        await uploadParts(partList,filename);
+        // message.info('上传成功');
 
+    }
+    async function uploadParts(partList:Part[],filename:string){
+        let request = createRequests(partList);
+    }
+    function createRequests(partList:Part[]){
+        return partList.map((part:Part)=>{
+            request({
+                url:`/upload/${filename}/${part.chunkName}`,
+                method:"POST",
+                headers:{
+                    'Content-type':'application/octet-stream'//请求格式
+                },
+                data: part.chunk //请求休
+            })
+        })
     }
     return (
         <Row>
@@ -52,6 +97,20 @@ function Upload() {
     )
 }
 
+
+
+function createChunks(file: File): Part[] {
+    let current = 0;
+    let partList: Part[] = [];
+    while (current < file.size) {
+        let chunk = file.slice(current, current + SIZE);
+        partList.push({
+            chunk, size: chunk.size
+        })
+        current += SIZE;
+    }
+    return partList;
+}
 function allowUpload(file: File) {
     let f = file.type; //image/jpeg
     let validFileTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4'];

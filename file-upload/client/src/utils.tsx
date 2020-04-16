@@ -1,10 +1,10 @@
 
 interface AjaxOptions {
-    method: string,
     url: string,
+    method?: string,
     headers?: any,
     baseURL?:string,
-    data: any
+    data?: any
 }
 export function request(options: AjaxOptions):Promise<any> {
     let defaultOptions = {
@@ -28,7 +28,7 @@ export function request(options: AjaxOptions):Promise<any> {
         // 创建xhr对象
         let xhr = new XMLHttpRequest();
         // open
-        xhr.open(options.method, options.baseURL + options.url);
+        xhr.open(options.method!, options.baseURL + options.url);
         // 设置headers
         Object.keys(options.headers).forEach(key => {
             xhr.setRequestHeader(key, options.headers[key]);
@@ -45,7 +45,7 @@ export function request(options: AjaxOptions):Promise<any> {
             }
         }
         //发送语法
-        xhr.send(options.data);
+        xhr.send(options.method === 'GET' ? null : options.data);
     });
 
 

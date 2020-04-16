@@ -7,7 +7,7 @@ import path from 'path';
 // import { PUBLIC_DIR } from './utils';
 import fs, { createWriteStream } from 'fs-extra';
 // import multiparty from 'multiparty';
-import { TEMP_DIR } from './utils';
+import { TEMP_DIR, mergeChunks } from './utils';
 // const PUBLIC_DIR = path.resolve(__dirname, 'public');
 let app = express();
 app.use(logger('dev'));
@@ -15,6 +15,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 app.use(express.static(path.resolve(__dirname, 'public')));
+
+app.get('/upload/:filename', async (req: Request, res: Response) => {
+    let { filename } = req.params;
+    await mergeChunks(filename);
+    res.json({
+        success: true
+    });
+});
 app.post('/upload/:filename/:chunk_name', async function (req: Request, res: Response, _next: NextFunction) {
     let { filename, chunk_name } = req.params;
     let chunk_dir = path.resolve(TEMP_DIR, filename);

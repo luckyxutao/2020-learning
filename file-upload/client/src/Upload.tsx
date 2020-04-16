@@ -67,10 +67,10 @@ function Upload() {
 
     }
     async function uploadParts(partList: Part[], filename: string) {
-        return Promise.all(createRequests(partList)).then(res=>{
-
+        await Promise.all(createRequests(partList));
+        await request({
+            url : `/upload/${filename}`
         });
-        
     }
     function createRequests(partList: Part[]) {
         return partList.map((part: Part) => {

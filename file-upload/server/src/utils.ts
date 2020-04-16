@@ -51,5 +51,5 @@ export const splitChunks = async (filename: string, size: number = DEFAULT_SIZE)
 
 }
 
-mergeChunks('aed50a0acf222fdc6015e13070f583ba.mp4');
+// mergeChunks('aed50a0acf222fdc6015e13070f583ba.mp4');
 // splitChunks('tom.jpg');

@@ -1,7 +1,7 @@
 
 import path from 'path';
 import fs, { } from 'fs-extra';
-const DEFAULT_SIZE = 1024 * 50;//50k
+const DEFAULT_SIZE = 1024*1024 * 10;//10M
 export const PUBLIC_DIR = path.resolve(__dirname, 'public');
 export const TEMP_DIR = path.resolve(__dirname, 'temp');
 
@@ -51,5 +51,5 @@ export const splitChunks = async (filename: string, size: number = DEFAULT_SIZE)
 
 }
 
-mergeChunks('tom.jpg');
+mergeChunks('aed50a0acf222fdc6015e13070f583ba.mp4');
 // splitChunks('tom.jpg');

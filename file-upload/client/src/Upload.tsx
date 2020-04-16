@@ -2,12 +2,12 @@ import React, { ChangeEvent, useState, useEffect } from 'react';
 import { Row, Col, Input, Button, message } from 'antd';
 import { request } from './utils';
 
-const SIZE = 1024 * 1024; //1M
+const SIZE = 1024 * 1024 * 10; //10M
 
 interface Part {
     chunk: Blob,
-    filename?:string,
-    chunkName?:string,
+    filename?: string,
+    chunkName?: string,
     size: number
 }
 
@@ -15,8 +15,8 @@ function Upload() {
     let [currentFile, setCurrentFile] = useState<File>();
     let [objectURL, setObjectURL] = useState('');
     let [hashPercent, setHashPercent] = useState(0);
-    let [partList,setPartList] = useState<Part[]>([]);
-    let [filename,setFileName] = useState('');
+    let [partList, setPartList] = useState<Part[]>([]);
+    let [filename, setFileName] = useState('');
     useEffect(() => {
         if (currentFile) {
             let objectURL = window.URL.createObjectURL(currentFile);
@@ -45,7 +45,7 @@ function Upload() {
             };
         });
     }
-//851a368cefebf1f35e7fb9bacdc74581
+    //851a368cefebf1f35e7fb9bacdc74581
     async function handleUpload() {
         if (!currentFile) {
             return message.error('尚未选择文件')
@@ -53,30 +53,32 @@ function Upload() {
         let partials: Part[] = createChunks(currentFile);
         //通过webworker子进程计算哈希
         let fileHasn = await calculateHash(partials);
-        debugger
         let lastDotIndex = currentFile.name.lastIndexOf('.');
         let extName = currentFile.name.slice(lastDotIndex);
         let filename = `${fileHasn}${extName}`;
         setFileName(filename);
-        partials.forEach((item,index)=>{
+        partials.forEach((item, index) => {
             item.filename = filename;
             item.chunkName = `${filename}-${index}`;
         });
         setPartList(partials);
-        await uploadParts(partList,filename);
-        // message.info('上传成功');
+        await uploadParts(partList, filename);
+        message.info('上传成功');
 
     }
-    async function uploadParts(partList:Part[],filename:string){
-        let request = createRequests(partList);
+    async function uploadParts(partList: Part[], filename: string) {
+        return Promise.all(createRequests(partList)).then(res=>{
+
+        });
+        
     }
-    function createRequests(partList:Part[]){
-        return partList.map((part:Part)=>{
-            request({
-                url:`/upload/${filename}/${part.chunkName}`,
-                method:"POST",
-                headers:{
-                    'Content-type':'application/octet-stream'//请求格式
+    function createRequests(partList: Part[]) {
+        return partList.map((part: Part) => {
+            return request({
+                url: `/upload/${filename}/${part.chunkName}`,
+                method: "POST",
+                headers: {
+                    'Content-type': 'application/octet-stream'//请求格式
                 },
                 data: part.chunk //请求休
             })

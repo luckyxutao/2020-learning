@@ -4,7 +4,8 @@ interface AjaxOptions {
     method?: string,
     headers?: any,
     baseURL?:string,
-    data?: any
+    data?: any,
+    setXHR?:Function
 }
 export function request(options: AjaxOptions):Promise<any> {
     let defaultOptions = {
@@ -43,6 +44,9 @@ export function request(options: AjaxOptions):Promise<any> {
                     reject(xhr.response);
                 }
             }
+        }
+        if(options.setXHR){
+            options.setXHR(xhr);
         }
         //发送语法
         xhr.send(options.method === 'GET' ? null : options.data);

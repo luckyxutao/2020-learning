@@ -7,7 +7,7 @@ import path from 'path';
 // import { PUBLIC_DIR } from './utils';
 import fs, { createWriteStream } from 'fs-extra';
 // import multiparty from 'multiparty';
-import { TEMP_DIR, mergeChunks } from './utils';
+import { TEMP_DIR, mergeChunks, PUBLIC_DIR } from './utils';
 // const PUBLIC_DIR = path.resolve(__dirname, 'public');
 let app = express();
 app.use(logger('dev'));
@@ -23,6 +23,37 @@ app.get('/upload/:filename', async (req: Request, res: Response) => {
         success: true
     });
 });
+
+app.get('/verify/:filename',async(req:Request,_res:Response):Promise<any>=>{
+    let { filename} = req.params;
+    let filePath = path.resolve(PUBLIC_DIR,filename);
+    let hasExistFile = await fs.pathExists(filePath);
+    if(hasExistFile){
+        return {
+            success:true,
+            needUpload:false
+        }
+    }
+    let tempDir = path.resolve(TEMP_DIR,filename);
+    let exist = await fs.pathExists(tempDir);
+    let uploadList:any[] = [];
+    if(exist){
+        uploadList = await fs.readdir(tempDir);
+        uploadList = await Promise.all([uploadList.map(async(filename:string)=>{
+            let stat = await fs.stat(path.resolve(tempDir,filename));
+            return {
+                filename,
+                size : stat.size
+            };
+        })]);
+    }
+    _res.json({
+        success : true,
+        needUpload : true,
+        uploadList
+    })
+});
+
 app.post('/upload/:filename/:chunk_name', async function (req: Request, res: Response, _next: NextFunction) {
     let { filename, chunk_name } = req.params;
     let chunk_dir = path.resolve(TEMP_DIR, filename);

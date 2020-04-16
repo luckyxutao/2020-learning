@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useState, useEffect } from 'react';
-import { Row, Col, Input, Button, message } from 'antd';
+import { Row, Col, Input, Button, message, Progress } from 'antd';
 import { request } from './utils';
 
 const SIZE = 1024 * 1024 * 10; //10M
@@ -8,7 +8,12 @@ interface Part {
     chunk: Blob,
     filename?: string,
     chunkName?: string,
-    size: number
+    size: number,
+    xhr?:XMLHttpRequest
+}
+interface Uploaded{
+    filename:string,
+    size : number
 }
 
 function Upload() {
@@ -39,7 +44,9 @@ function Upload() {
             worker.postMessage({ partList });
             worker.onmessage = (event) => {
                 let { percent: _a, hash } = event.data;
+                setHashPercent(_a);
                 if (hash) {
+                    console.log('hash计算完成')
                     resolve(hash);
                 }
             };
@@ -62,21 +69,48 @@ function Upload() {
             item.chunkName = `${filename}-${index}`;
         });
         setPartList(partials);
-        await uploadParts(partList, filename);
-        message.info('上传成功');
+        // await uploadParts(partList, filename);
+        // message.info('上传成功');
 
     }
+
+    async function verify(filename:string){
+        return request({
+            url : `/verify/${filename}`
+        })
+    }
+
     async function uploadParts(partList: Part[], filename: string) {
-        await Promise.all(createRequests(partList));
+        let { needUpload, uploadList} = await verify(filename);
+        if(!needUpload){
+            return message.success('秒传成功')
+        }
+        await Promise.all(createRequests(partList,uploadList,filename));
         await request({
             url : `/upload/${filename}`
         });
     }
-    function createRequests(partList: Part[]) {
-        return partList.map((part: Part) => {
+    function createRequests(partList: Part[],uploadList:Uploaded[],filename:string) {
+        return partList.filter((part:Part)=>{
+            let uploadFile = uploadList.find(item=>{
+                return item.filename === part.chunkName;
+            });
+            //服务器上没此chunk，则需要上传
+            if(!uploadFile){
+                return true;
+            }
+            //服务器上的chunksize小于chunkSize，也需要重新上传
+            if(uploadFile.size < part.chunk.size){
+                return true;
+            }
+            return false;
+        }).map((part: Part) => {
             return request({
                 url: `/upload/${filename}/${part.chunkName}`,
                 method: "POST",
+                setXHR:(xhr:XMLHttpRequest)=>{
+                    part.xhr = xhr;
+                },
                 headers: {
                     'Content-type': 'application/octet-stream'//请求格式
                 },
@@ -84,18 +118,41 @@ function Upload() {
             })
         })
     }
+
+    function handleResume(){
+        uploadParts(partList,filename);
+    }
+
+    function handlePause(){
+        partList.forEach((part:Part)=>{
+            part.xhr && part.xhr.abort();
+        });
+    }
+
     return (
-        <Row>
-            <Col span={12}>
-                <Input type="file" style={{ width: 300 }} onChange={handleChange} />
-                <Button type="primary" onClick={handleUpload}>上传</Button>
-            </Col>
-            <Col span={12}>
-                {
-                    objectURL && objectURL ? <img src={objectURL} style={{ width: 300 }} /> : null
-                }
-            </Col>
-        </Row>
+        <>
+            <Row>
+                <Col span={12}>
+                    <Input type="file" style={{ width: 300 }} onChange={handleChange} />
+                    <Button type="primary" onClick={handleUpload}>上传</Button>
+                    <Button type="primary" onClick={handlePause}  style={{marginLeft:10}}>暂停</Button>
+                    <Button type="primary" onClick={handleResume} style={{marginLeft:10}}>恢复</Button>
+                </Col>
+                <Col span={12}>
+                    {
+                        objectURL && objectURL ? <img src={objectURL} style={{ width: 300 }} /> : null
+                    }
+                </Col>
+            </Row>
+            <Row>
+                <div>
+                    文件hash计算进度
+                </div>
+            </Row>
+            <div>
+                <Progress percent={hashPercent*100} />
+            </div>
+        </>
     )
 }
 

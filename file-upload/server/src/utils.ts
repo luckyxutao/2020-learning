@@ -26,7 +26,7 @@ export const mergeChunks = async (filename: string, size: number = DEFAULT_SIZE)
     Promise.all(chunkFiles.map((chunkName, index) => {
         return pipeStream(dstFilePath, path.resolve(chunksDir, chunkName), index, size);
     })).then(_res=>{
-        
+        fs.rmdir(chunksDir);
     })
 }
 

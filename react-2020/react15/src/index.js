@@ -2,8 +2,12 @@ import React, { Component } from './react';
 import ReactDOM from './react-dom';
 
 let onClick = (e) => {
-  e.persist();
+  bb(e);
   console.log(e);
+}
+function bb(e){
+  console.log(e);
+  
 }
 let element = React.createElement('button', {
   id: 'sayHello', onClick

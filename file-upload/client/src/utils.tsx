@@ -5,7 +5,8 @@ interface AjaxOptions {
     headers?: any,
     baseURL?:string,
     data?: any,
-    setXHR?:Function
+    setXHR?:Function,
+    onProgress?:any
 }
 export function request(options: AjaxOptions):Promise<any> {
     let defaultOptions = {
@@ -44,6 +45,9 @@ export function request(options: AjaxOptions):Promise<any> {
                     reject(xhr.response);
                 }
             }
+        }
+        if(options.onProgress){
+            xhr.upload.onprogress = options.onProgress!
         }
         if(options.setXHR){
             options.setXHR(xhr);

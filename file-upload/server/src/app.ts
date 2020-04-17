@@ -24,38 +24,39 @@ app.get('/upload/:filename', async (req: Request, res: Response) => {
     });
 });
 
-app.get('/verify/:filename',async(req:Request,_res:Response):Promise<any>=>{
-    let { filename} = req.params;
-    let filePath = path.resolve(PUBLIC_DIR,filename);
+
+app.get('/verify/:filename', async (req: Request, _res: Response): Promise<any> => {
+    let { filename } = req.params;
+    let filePath = path.resolve(PUBLIC_DIR, filename);
     let hasExistFile = await fs.pathExists(filePath);
-    if(hasExistFile){
-        return {
-            success:true,
-            needUpload:false
-        }
+    if (hasExistFile) {
+        return _res.json({
+            success: true,
+            needUpload: false
+        })
     }
-    let tempDir = path.resolve(TEMP_DIR,filename);
+    let tempDir = path.resolve(TEMP_DIR, filename);
     let exist = await fs.pathExists(tempDir);
-    let uploadList:any[] = [];
-    if(exist){
+    let uploadList: any[] = [];
+    if (exist) {
         uploadList = await fs.readdir(tempDir);
-        uploadList = await Promise.all([uploadList.map(async(filename:string)=>{
+        uploadList = await Promise.all(uploadList.map(async (filename: string) => {
             let stat = await fs.stat(path.resolve(tempDir,filename));
             return {
                 filename,
                 size : stat.size
             };
-        })]);
+        }));
     }
-    _res.json({
-        success : true,
-        needUpload : true,
-        uploadList
-    })
+_res.json({
+    success: true,
+    needUpload: true,
+    uploadList
+})
 });
 
-app.post('/upload/:filename/:chunk_name', async function (req: Request, res: Response, _next: NextFunction) {
-    let { filename, chunk_name } = req.params;
+app.post('/upload/:filename/:chunk_name/:start', async function (req: Request, res: Response, _next: NextFunction) {
+    let { filename, chunk_name,start=0 } = req.params;
     let chunk_dir = path.resolve(TEMP_DIR, filename);
     let exist = await fs.pathExists(chunk_dir);
     if (!exist) {
@@ -63,12 +64,18 @@ app.post('/upload/:filename/:chunk_name', async function (req: Request, res: Res
     }
     let chunkFilePath = path.resolve(chunk_dir, chunk_name);
     // a appped后边断点续传
-    let ws = createWriteStream(chunkFilePath, { start: 0, flags: 'a' });
+    let ws = createWriteStream(chunkFilePath, { start:Number(start), flags: 'a' });
     req.pipe(ws);
+    req.on('error', () => {
+        ws.close();
+    });
+    req.on('close', () => {
+        ws.close();
+    });
     req.on('end', () => {
         ws.close();
         res.json({ success: true })
-    })
+    });
 });
 // app.post('/upload', function (req: Request, res: Response, next: NextFunction) {
 //     let form = new multiparty.Form();

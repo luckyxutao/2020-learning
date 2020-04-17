@@ -116,7 +116,6 @@ function Upload() {
             }
             return false;
         });
-        debugger
         return realUploadList.map((part: Part) => {
             return request({
                 url: `/upload/${filename}/${part.chunkName}/${part.loaded}`,

@@ -1,5 +1,5 @@
 
-[!](https://ftp.bmp.ovh/imgs/2020/04/9b949d6a00af9c6b.png)
+![](https://ftp.bmp.ovh/imgs/2020/04/9b949d6a00af9c6b.png)
 ### 结构
 * server
     * nodejs+express

@@ -24,6 +24,19 @@ app.get('/upload/:filename', async (req: Request, res: Response) => {
     });
 });
 
+app.get('/video-download/:filename', async(req:Request,res:Response)=>{
+    let { filename } = req.params;
+    const rs = fs.createReadStream(path.resolve(__dirname, `public/${filename}`));
+    rs.pipe(res);
+    res.setHeader('Content-Type','video/mp4')
+    res.setHeader('Accept-Ranges','bytes');
+    rs.on('close', function() { 
+        res.json({
+            finished:true
+        })
+        console.log("Stream finished."); 
+    }); 
+});
 
 app.get('/verify/:filename', async (req: Request, _res: Response): Promise<any> => {
     let { filename } = req.params;

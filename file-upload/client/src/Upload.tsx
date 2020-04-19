@@ -17,13 +17,18 @@ interface Uploaded {
     filename: string,
     size: number
 }
-
+enum UploadStatus {
+    INIT,//初始态
+    PAUSE,//暂停中
+    UPLOADING//上传中
+}
 function Upload() {
     let [currentFile, setCurrentFile] = useState<File>();
     let [objectURL, setObjectURL] = useState('');
     let [hashPercent, setHashPercent] = useState(0);
     let [partList, setPartList] = useState<Part[]>([]);
     let [filename, setFileName] = useState('');
+    let [uploadStatus,setUploadStatus] = useState(UploadStatus.INIT);
     useEffect(() => {
         if (currentFile) {
             let objectURL = window.URL.createObjectURL(currentFile);
@@ -59,6 +64,7 @@ function Upload() {
         if (!currentFile) {
             return message.error('尚未选择文件')
         }
+        setUploadStatus(UploadStatus.UPLOADING);
         let partials: Part[] = createChunks(currentFile);
         //通过webworker子进程计算哈希
         let fileHasn = await calculateHash(partials);
@@ -94,12 +100,12 @@ function Upload() {
         if (!needUpload) {
             return message.success('秒传成功')
         }
-        await Promise.all(createRequests(partList, uploadList, filename));
+        await createRequests(partList, uploadList, filename);
         await request({
             url: `/upload/${filename}`
         });
     }
-    function createRequests(partList: Part[], uploadList: Uploaded[], filename: string) {
+    async function createRequests(partList: Part[], uploadList: Uploaded[], filename: string) {
         var realUploadList = partList.filter((part: Part) => {
             let uploadFile = uploadList.find(item => {
                 return item.filename === part.chunkName;
@@ -110,14 +116,19 @@ function Upload() {
             }
             //服务器上的chunksize小于chunkSize，也需要重新上传
             if (uploadFile.size < part.chunk.size) {
-                part.loaded = uploadFile.size;
-                part.percent = part.loaded/part.chunk.size;
+                // part.loaded = uploadFile.size;
+                // part.percent = part.loaded/part.chunk.size;
+                part.loaded = 0;
+                part.percent =0;
                 return true;
+            } else {
+                part.percent = 100
             }
             return false;
         });
-        return realUploadList.map((part: Part) => {
-            return request({
+        for(let i=0;i<realUploadList.length;i++){
+            var part = realUploadList[i];
+            await request({
                 url: `/upload/${filename}/${part.chunkName}/${part.loaded}`,
                 method: "POST",
                 setXHR: (xhr: XMLHttpRequest) => {
@@ -131,15 +142,36 @@ function Upload() {
                     'Content-type': 'application/octet-stream'//请求格式
                 },
                 data: part.chunk //请求休
-            })
-        })
+            });
+        }
+        // return realUploadList.map(async(part: Part) => {
+        //     var result = await request({
+        //         url: `/upload/${filename}/${part.chunkName}/${part.loaded}`,
+        //         method: "POST",
+        //         setXHR: (xhr: XMLHttpRequest) => {
+        //             part.xhr = xhr;
+        //         },
+        //         onProgress: function (event: ProgressEvent) {
+        //             part.percent = Number((Number((part.loaded || 0) + event.loaded) / part.chunk.size * 100).toFixed(2));
+        //             setPartList([...partList]);
+        //         },
+        //         headers: {
+        //             'Content-type': 'application/octet-stream'//请求格式
+        //         },
+        //         data: part.chunk //请求休
+        //     });
+        //     return result;
+        // })
     }
 
     function handleResume() {
+        setUploadStatus(UploadStatus.UPLOADING);
+        debugger
         uploadParts(partList, filename);
     }
 
     function handlePause() {
+        setUploadStatus(UploadStatus.PAUSE);
         partList.forEach((part: Part) => {
             part.xhr && part.xhr.abort();
         });

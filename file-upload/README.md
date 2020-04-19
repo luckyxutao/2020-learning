@@ -4,7 +4,7 @@
 * server
     * nodejs+express
 * create-react-app + antd
-
+* hash计算放在了serviceWorker里
 ### 实现了大文件分片上传
 * 前端对File(继承自Blob)进行切片
 * 对File计算生成hash,文件名

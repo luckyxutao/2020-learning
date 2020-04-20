@@ -15,6 +15,25 @@ export function setProps(dom,props){
     }
 }
 
+export function patchProps(ele,oldProps,newProps){
+    //把新的属性覆盖旧的,复用旧元素
+    //旧的是 a bc  新的是 b e f
+    // a c 删除，b覆盖新的
+    for(let key in oldProps){
+        if(key !== 'children'){
+            if(!newProps.hasOwnProperty(key)){//新的没有，直接删除
+                ele.removeAttribute(key)
+            }
+        }
+    }
+    for(let key in newProps){
+        if(key !== 'children'){
+            setProp(ele,key,newProps[key]);
+        }
+    }
+}
+
+
 function setProp(dom,key,value){
     if(/^on/.test(key)){
         addEvent(dom,key,value);
@@ -27,4 +46,8 @@ function setProp(dom,key,value){
     } else {
         dom.setAttribute(key,value);
     }
+}
+
+export function isFunction(obj) {
+    return typeof obj === 'function';
 }

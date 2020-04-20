@@ -6,6 +6,8 @@ const RESEVED_PROOPS = {
     __self: true,
 }
 export function createElement(type, config, children) {
+    delete config.__source;
+    delete config.__self;;
     let propName;
     const props = {};
     let key = null;

@@ -93,7 +93,6 @@ class Component{
         if(this.componentWillUpdate){
             this.componentWillUpdate(props,state);
         }
-        debugger
         let newRenderElement = this.render();
         let currentElement = compareTwoElements(oldRenderElement,newRenderElement);
         this.renderElement = currentElement;

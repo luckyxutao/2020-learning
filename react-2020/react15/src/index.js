@@ -1,34 +1,54 @@
 import React, { Component } from './react';
 import ReactDOM from './react-dom';
 
-class ClassCounter extends React.Component {
-  render() {
-    return (
-      <div id={'counter' + this.props.number}></div>
-    )
-  }
-}
 
-// function FunctionCounter(props) {
-//   return (
-//     <div id={'counter' + props.number}></div>
-//   )
-// }
 class Counter extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { number: 0 };
+    this.state = {
+      list: [{
+        id: 111,
+        name: 'aaaa'
+      }, {
+        id: 222,
+        name: 'bbbb'
+      }, {
+        id: 333,
+        name: 'cccc'
+      }, {
+        id: 444,
+        name: 'dddd'
+      }]
+    }
   }
-  onClick=()=>{
+  onClick = () => {
     console.log('ffff')
     this.setState({
-      number : this.state.number+1
+      list: [{
+        id: 222,
+        name: 'bbbb'
+      }, {
+        id: 333,
+        name: 'cccc'
+      }, {
+        id: 111,
+        name: 'aaaa'
+      }, {
+        id: 444,
+        name: 'dddd'
+      }]
     })
   }
   render() {
     return (
-      <div id={`node-${this.state.number}`}>
-        <span>{this.state.number}</span>
+      <div style={{ padding: '20px' }}>
+        <ul>
+          {
+            this.state.list.map((v, i) => {
+              return <li key={v.id}>{v.name}</li>
+            })
+          }
+        </ul>
         <button onClick={this.onClick}>button</button>
       </div>
     )

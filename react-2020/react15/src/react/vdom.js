@@ -12,7 +12,7 @@ function createDOM(element) {
     let dom;
     if (!$$typeof) {
         dom = document.createTextNode(element);
-    } else if($$typeof === TEXT){
+    } else if ($$typeof === TEXT) {
         dom = document.createTextNode(element.content);
     } else if ($$typeof === REACT_ELEMENT_TYPE) {
         dom = createNativeDOM(element);
@@ -92,13 +92,13 @@ function updateElement(oldElement, newElement) {
     //
     let currentDOM = newElement.dom = oldElement.dom;
     //如果都是文本类型，直接替换
-    if (oldElement.$$typeof === TEXT && newElement.$$typeof === TEXT ) {
+    if (oldElement.$$typeof === TEXT && newElement.$$typeof === TEXT) {
         if (oldElement.content !== newElement.content) {
             currentDOM.textContent = newElement.content;
         } //如果是元素类型(div,span)
     } else if (oldElement.$$typeof === REACT_ELEMENT_TYPE) {
         updateDOMProperties(currentDOM, oldElement.props, newElement.props);
-        debugger
+        // debugger
         updateChildrenElements(currentDOM, oldElement.props.children, newElement.props.children);
         oldElement.props = newElement.props; //更新props
     } else if (oldElement.$$typeof === CLASS_COMPONENT) {
@@ -201,11 +201,46 @@ function updateChildrenElements(dom, oldChildrenElements, newChildrenElements) {
     diff(dom, oldChildrenElements, newChildrenElements);
     updateDepth--;//每比较完一层，返回上一级的时候，就updateDepth--
     if (updateDepth === 0) {//updateDepth等于，就说明回到最上面一层了，整个更新对比就完事了
-        // patch(diffQueue);//把收集到的差异 补丁传给patch方法进行更新
-        console.log(diffQueue)
+        patch(diffQueue);//把收集到的差异 补丁传给patch方法进行更新
+        // console.log(diffQueue)
         diffQueue.length = 0;
     }
 }
+
+function patch(diffQueue) {
+    let deleteMap = {};
+    let deleteChildren = [];
+    for (let i = 0; i < diffQueue.length; i++) {
+        let difference = diffQueue[i];
+        let { type, fromIndex, toIndex, parentNode } = difference;
+        if (type === MOVE || type === REMOVE) {
+            let oldDOM = parentNode.children[fromIndex];
+            deleteMap[fromIndex] = oldDOM;
+            deleteChildren.push(oldDOM);
+        }
+    }
+    deleteChildren.forEach(delDOM => {
+        delDOM.parentNode.removeChild(delDOM);
+    });
+
+    for (let i = 0; i < diffQueue.length; i++) {
+        let { type, fromIndex, toIndex, parentNode, dom } = diffQueue[i];
+        switch (type) {
+            case MOVE:
+                insertChildAt(parentNode, deleteMap[fromIndex], toIndex)
+                break;
+            default:
+                break;
+        }
+    }
+
+}
+
+function insertChildAt(parentNode, newChildDOM, index) {
+    let oldChild = parentNode.children[index];//先取出这个索引位置的老的DOM节点
+    oldChild ? parentNode.insertBefore(newChildDOM, oldChild) : parentNode.appendChild(newChildDOM);
+}
+
 function updateDOMProperties(dom, oldProps, newProps) {
     patchProps(dom, oldProps, newProps);
 }
@@ -239,9 +274,9 @@ function createNativeDOM(element) {
 
 function createNativeDOMChildren(parentNode, children) {
     if (Array.isArray(children)) {
-        children && children.forEach((child,i) => {
+        children && children.forEach((child, i) => {
             let childDOM = createDOM(child);
-            children._mountIndex = i;
+            child._mountIndex = i;
             parentNode.appendChild(childDOM);
         });
     } else {

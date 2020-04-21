@@ -1,16 +1,19 @@
-import { REACT_ELEMENT_TYPE, CLASS_COMPONENT, FUNCTION_COMPONENT } from '../shared/ReactSymbols';
+import { REACT_ELEMENT_TYPE, CLASS_COMPONENT, FUNCTION_COMPONENT, TEXT } from '../shared/ReactSymbols';
 import { onlyOne, setProps, patchProps } from './util';
 const MOVE = 'MOVE';
 const INSERT = 'INSERT';
 const REMOVE = 'REMOVE';
+const SET_MARKUP = 'SET_MARKUP';
 let updateDepth = 0;
 let diffQueue = [];//这是一个补丁包，记录了哪些节点需要删除 ，哪些节点需要添加
 function createDOM(element) {
     element = onlyOne(element);
     let { $$typeof } = element;
     let dom;
-    if (!$$typeof || element === 'string') {
+    if (!$$typeof) {
         dom = document.createTextNode(element);
+    } else if($$typeof === TEXT){
+        dom = document.createTextNode(element.content);
     } else if ($$typeof === REACT_ELEMENT_TYPE) {
         dom = createNativeDOM(element);
     } else if ($$typeof === FUNCTION_COMPONENT) {
@@ -18,6 +21,7 @@ function createDOM(element) {
     } else if ($$typeof === CLASS_COMPONENT) {
         dom = createClassComponentDOM(element);
     }
+    element.dom = dom;
     return dom;
 }
 /**
@@ -88,12 +92,13 @@ function updateElement(oldElement, newElement) {
     //
     let currentDOM = newElement.dom = oldElement.dom;
     //如果都是文本类型，直接替换
-    if (textElement(oldElement) && textElement(newElement)) {
-        if (oldElement !== newElement) {
-            currentDOM.textContent = newElement;
+    if (oldElement.$$typeof === TEXT && newElement.$$typeof === TEXT ) {
+        if (oldElement.content !== newElement.content) {
+            currentDOM.textContent = newElement.content;
         } //如果是元素类型(div,span)
     } else if (oldElement.$$typeof === REACT_ELEMENT_TYPE) {
         updateDOMProperties(currentDOM, oldElement.props, newElement.props);
+        debugger
         updateChildrenElements(currentDOM, oldElement.props.children, newElement.props.children);
         oldElement.props = newElement.props; //更新props
     } else if (oldElement.$$typeof === CLASS_COMPONENT) {
@@ -103,6 +108,12 @@ function updateElement(oldElement, newElement) {
     }
 }
 
+/**
+ * 先更新和移动的都是子节点
+ * 
+ * 1. 先更新父节点还是先更新子节点? 先更新的是父节点
+ * 2. 先移动父节点还是先移动子节点？ 先移动的是子节点
+ */
 function diff(parentNode, oldChildrenElements, newChildrenElements) {
     //oldChildrenElementsMap={G,A} newChildrenElementsMap={A,G}
     let oldChildrenElementsMap = getChildrenElementsMap(oldChildrenElements);//{A,B,C,D}
@@ -114,44 +125,42 @@ function diff(parentNode, oldChildrenElements, newChildrenElements) {
         if (newChildElement) {
             let newKey = newChildElement.key || i.toString();
             let oldChildElement = oldChildrenElementsMap[newKey];
-            if (newChildElement === oldChildElement) {//复用的老节点，指针指的是旧的
+            if (newChildElement === oldChildElement) {//说明他们是同一个对象，是复用老节点
                 if (oldChildElement._mountIndex < lastIndex) {
                     diffQueue.push({
-                        parentNode,
+                        parentNode,//我要移除哪个父节点下的元素
                         type: MOVE,
                         fromIndex: oldChildElement._mountIndex,
-                        toString: i
+                        toIndex: i
                     });
                 }
                 lastIndex = Math.max(oldChildElement._mountIndex, lastIndex);
-            } else {
+            } else {//如果新老元素不相等，是直接 插入
                 diffQueue.push({
                     parentNode,
                     type: INSERT,
                     toIndex: i,
                     dom: createDOM(newChildElement)
-                })
+                });
             }
-            newElement._mountIndex = i;
-        } else {
+            newChildElement._mountIndex = i;//更新挂载索引
+        } else {//newChildElement==null
             let newKey = i.toString();
             if (oldChildrenElementsMap[newKey].componentInstance && oldChildrenElementsMap[newKey].componentInstance.componentWillUnmount) {
                 oldChildrenElementsMap[newKey].componentInstance.componentWillUnmount();
             }
         }
-        //不用
-        for (let oldKey in oldChildrenElementsMap) {
-            if (!newChildrenElementsMap.hasOwnProperty(oldKey)) {
-                let oldChildElement = oldChildrenElementsMap[oldKey];
-                diffQueue.push({
-                    parentNode,
-                    type: REMOVE,
-                    fromIndex: oldChildElement._mountIndex//3
-                });
-            }
+    }
+    for (let oldKey in oldChildrenElementsMap) {
+        if (!newChildrenElementsMap.hasOwnProperty(oldKey)) {
+            let oldChildElement = oldChildrenElementsMap[oldKey];
+            diffQueue.push({
+                parentNode,
+                type: REMOVE,
+                fromIndex: oldChildElement._mountIndex//3
+            });
         }
     }
-
 }
 
 function getNewChildrenElementsMap(oldChildrenElementsMap, newChildrenElements) {
@@ -164,7 +173,7 @@ function getNewChildrenElementsMap(oldChildrenElementsMap, newChildrenElements) 
             //可以复用1.key一样 2 需要类型是一样的
             if (canDeepCompare(oldChildElement, newChildElement)) {
                 updateElement(oldChildElement, newChildElement);//复用老的DOM节点，用新属性更新这个DOM节点
-                newChildElement[i] = oldChildElement;
+                newChildrenElements[i] = oldChildElement;
             }
             newChildrenElementsMap[newKey] = newChildrenElements[i];
         }
@@ -183,17 +192,17 @@ function getChildrenElementsMap(oldChildrenElements) {
     let oldChildrenElementsMap = {};
     for (let i = 0; i < oldChildrenElements.length; i++) {
         let oldKey = oldChildrenElements[i].key || i.toString();
-        oldChildrenElements[oldKey] = oldChildrenElements[i];
+        oldChildrenElementsMap[oldKey] = oldChildrenElements[i];
     }
     return oldChildrenElementsMap;
 }
-
 function updateChildrenElements(dom, oldChildrenElements, newChildrenElements) {
     updateDepth++;//每进入一个新的子层级，就让updateDepth++
     diff(dom, oldChildrenElements, newChildrenElements);
     updateDepth--;//每比较完一层，返回上一级的时候，就updateDepth--
     if (updateDepth === 0) {//updateDepth等于，就说明回到最上面一层了，整个更新对比就完事了
-        patch(diffQueue);//把收集到的差异 补丁传给patch方法进行更新
+        // patch(diffQueue);//把收集到的差异 补丁传给patch方法进行更新
+        console.log(diffQueue)
         diffQueue.length = 0;
     }
 }
@@ -230,8 +239,9 @@ function createNativeDOM(element) {
 
 function createNativeDOMChildren(parentNode, children) {
     if (Array.isArray(children)) {
-        children && children.forEach(child => {
+        children && children.forEach((child,i) => {
             let childDOM = createDOM(child);
+            children._mountIndex = i;
             parentNode.appendChild(childDOM);
         });
     } else {

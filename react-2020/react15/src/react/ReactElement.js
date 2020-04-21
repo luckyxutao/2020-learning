@@ -1,11 +1,12 @@
 import ReactCurrentOwner from "./ReactCurrentOwner";
-import { REACT_ELEMENT_TYPE, TEXT, CLASS_COMPONENT, FUNCTION_COMPONENT } from '../shared/ReactSymbols'
+import { REACT_ELEMENT_TYPE, TEXT, CLASS_COMPONENT, FUNCTION_COMPONENT } from '../shared/ReactSymbols';
+import {flattern} from './util'
 const RESEVED_PROOPS = {
     key: true,
     ref: true,
     __self: true,
 }
-export function createElement(type, config, children) {
+export function createElement(type, config, ...children) {
     delete config.__source;
     delete config.__self;;
     let propName;
@@ -30,16 +31,14 @@ export function createElement(type, config, children) {
             }
         }
     }
-    const childrenLength = arguments.length - 2;
-    if (childrenLength === 1) {
-        props.children = children;
-    } else if (childrenLength > 1) {
-        const childArray = Array(childrenLength);
-        for (let i = 0; i < childArray.length; i++) {
-            childArray[i] = arguments[i + 2];
+    children = flattern(children);
+    props.children = children.map(item => {
+        if (typeof item === 'object' || typeof item === 'function') {
+            return item;// React.createElement('span', { color: 'red' }, 'Hello')
+        } else {
+            return {$$typeof:TEXT, type: TEXT, content: item };//item = "Hello"
         }
-        props.children = childArray;
-    }
+    })
     if (type && type.defaultProps) {
         const defaultProps = type.defaultProps;
         for (propName in defaultProps) {

@@ -1,3 +1,4 @@
+import { updateQueue } from './ReactBaseClasses';
 
 /**
  * 1. 事件是绑定到document上的，类似于事件委托
@@ -20,6 +21,7 @@ function dispatchEvent(event) {
     let eventType = 'on' + type;
     //此处给syntheicEvent赋值
     syntheticEvent = getSyntheticEvent(event);
+    updateQueue.isPending = true;
     while (target) {
         let { eventStore } = target;
         let listener = eventStore && eventStore[eventType];
@@ -32,6 +34,8 @@ function dispatchEvent(event) {
     for(let key in syntheticEvent){
         syntheticEvent[key] = null;
     }
+    updateQueue.isPending = false;
+    updateQueue.batchUpdate();
 }
 function persist(){
     syntheticEvent = { persist}

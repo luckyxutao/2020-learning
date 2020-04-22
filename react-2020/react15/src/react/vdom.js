@@ -1,5 +1,6 @@
 import { REACT_ELEMENT_TYPE, CLASS_COMPONENT, FUNCTION_COMPONENT, TEXT } from '../shared/ReactSymbols';
 import { onlyOne, setProps, patchProps } from './util';
+import {unstable_batchedUpdates} from '../react-dom/index'
 const MOVE = 'MOVE';
 const INSERT = 'INSERT';
 const REMOVE = 'REMOVE';
@@ -62,6 +63,9 @@ function createClassComponentDOM(element) {
     componentInstance.renderElement = renderElement;
     let newDom = createDOM(renderElement);
     renderElement.dom = newDom;
+    if(componentInstance.componentDidMount){
+        unstable_batchedUpdates(componentInstance.componentDidMount.bind(componentInstance));
+    }
     return newDom;
 }
 

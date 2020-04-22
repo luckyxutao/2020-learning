@@ -4,12 +4,12 @@ import ReactDOM from './react-dom';
 // import ReactDOM from 'react-dom';
 
 class ChildMan extends React.Component {
-  shouldComponentUpdate(nextProps,nextState){
-    return true
-  }
-  componentWillUpdate(nextProps,nextState){
-    
-  }
+  // shouldComponentUpdate(nextProps,nextState){
+  //   return true
+  // }
+  // componentWillUpdate(nextProps,nextState){
+
+  // }
   render() {
     const { number } = this.props;
     return (
@@ -78,7 +78,14 @@ class Counter extends React.Component {
       number:0
     }
   }
+
   onClick = () => {
+    this.setState({
+      number:this.state.number+1
+    });
+    this.setState({
+      number:this.state.number+1
+    });
     this.setState({
       number:this.state.number+1
     })

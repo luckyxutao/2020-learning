@@ -1,9 +1,9 @@
 import { isFunction } from "./util";
 import { compareTwoElements} from './vdom';
 
-const updateQueue = {
+export const updateQueue = {
     updaters:[],
-    isPending:false,
+    isPending:false,//是否批量更新模式 如果isPending=true 则处于批量更新模式
     add(updater){
         this.updaters.push(updater);
     },
@@ -32,7 +32,8 @@ class Updater{
     }
     emitUpdate(nextProps){
         this.nextProps = nextProps;
-        if(!updateQueue.isPending){
+        //如果有新props或非批量更新模式
+        if(nextProps || !updateQueue.isPending){
             this.updateComponent();
         } else {
             updateQueue.add(this);
@@ -40,7 +41,7 @@ class Updater{
     }
     updateComponent(){
         let { inst, pendingStates, nextProps} = this;
-        if(nextProps || pendingStates.length > 0){
+        if(nextProps || pendingStates.length > 0){//如果有props或更新队列
             this.shouldUpdate(
                 inst,
                 nextProps,
@@ -99,6 +100,9 @@ class Component{
         let newRenderElement = this.render();
         let currentElement = compareTwoElements(oldRenderElement,newRenderElement);
         this.renderElement = currentElement;
+        if(this.componentDidUpdate){
+            this.componentDidUpdate(props,state);
+        }
     }
 
     setState(partialState){
@@ -106,13 +110,6 @@ class Component{
     }
 }
 Component.prototype.isReactComponent = {};
-
-class PureComponent extends Component{
-
-}
-PureComponent.prototype.isPureComponent = true;
-
 export{
-    PureComponent,
     Component
 };

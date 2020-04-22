@@ -1,6 +1,5 @@
 import { isFunction } from "./util";
 import { compareTwoElements} from './vdom';
-const emptyObject = {};
 
 const updateQueue = {
     updaters:[],
@@ -9,11 +8,8 @@ const updateQueue = {
         this.updaters.push(updater);
     },
     batchUpdate(){
-        if(this.isPending){
-            return;
-        }
-        this.isPending = true;
         let { updaters} = this;
+        this.isPending = true;
         let updater;
         while(updaters.length>0){
             updater = updaters.pop();
@@ -53,11 +49,23 @@ class Updater{
         }
     }
     shouldUpdate(inst,nextProps,nextState){
-        inst .props = nextProps;
-        inst.state = nextState;
-        if(inst.shoudComponentUpdate && !inst.shouldComponentUpdate()){
-            return;
+        let shouldUpdate = true;
+        if(inst.shouldComponentUpdate){
+            shouldUpdate = inst.shouldComponentUpdate(nextProps,nextState);
         }
+        if(shouldUpdate){
+            this._performComponentUpdate(inst,nextProps,nextState);
+        } else {
+            inst.props = nextProps;
+            inst.state = nextState;
+        }
+    }
+    _performComponentUpdate(inst,nextProps,nextState){
+        if(inst && inst.componentWillUpdate){
+            inst.componentWillUpdate(nextProps,nextState);
+        }
+        inst.props = nextProps;
+        inst.state = nextState;
         inst.forceUpdate();
     }
     getState(){
@@ -84,15 +92,10 @@ class Component{
         this.$updater = new Updater(this);
         this.state = {};
         this.nextProps = null;
-        // this.context = context;
-        // this.refs = emptyObject;
     }
 
     forceUpdate(){
         let { props, state, renderElement: oldRenderElement } = this;
-        if(this.componentWillUpdate){
-            this.componentWillUpdate(props,state);
-        }
         let newRenderElement = this.render();
         let currentElement = compareTwoElements(oldRenderElement,newRenderElement);
         this.renderElement = currentElement;

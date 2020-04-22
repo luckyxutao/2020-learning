@@ -226,6 +226,9 @@ function patch(diffQueue) {
     for (let i = 0; i < diffQueue.length; i++) {
         let { type, fromIndex, toIndex, parentNode, dom } = diffQueue[i];
         switch (type) {
+            case INSERT:
+                insertChildAt(parentNode, dom, toIndex);
+                break;
             case MOVE:
                 insertChildAt(parentNode, deleteMap[fromIndex], toIndex)
                 break;
@@ -233,7 +236,6 @@ function patch(diffQueue) {
                 break;
         }
     }
-
 }
 
 function insertChildAt(parentNode, newChildDOM, index) {

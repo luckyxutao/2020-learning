@@ -1,7 +1,7 @@
 // import React, { Component } from './react';
 // import ReactDOM from './react-dom';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from './react-dom';
 
 class ChildMan extends React.Component {
   // shouldComponentUpdate(nextProps,nextState){
@@ -92,13 +92,20 @@ class Counter extends React.Component {
     })
   }
   render() {
-    return (
-      <div style={{ padding: '20px' }}>
-        <ChildMan number={this.state.number} />
-        <button onClick={this.onClick}>button</button>
-      </div>
-    )
+    if(this.state.number === 0){
+      return  <div><button onClick={this.onClick}>button</button></div>
+      // return (
+      //   <div style={{ padding: '20px' }}>
+      //     <ChildMan number={this.state.number} />
+      //     <button onClick={this.onClick}>button</button>
+      //   </div>
+      // )
+    } else {
+      return <ChildMan number={this.state.number} />
+    }
+
   }
 }
 let element = React.createElement(Counter, {});
+debugger
 ReactDOM.render(element, document.getElementById('root'))

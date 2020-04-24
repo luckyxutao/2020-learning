@@ -13,7 +13,7 @@ var  _assign = require('object-assign');
 var DOMChildrenOperations = require('./dom/DOMChildrenOperations');
 var DOMLazyTree = require('./dom/DOMLazyTree');
 var ReactDOMComponentTree = require('./dom/ReactDOMComponentTree');
-
+var globalId =0;
 /**
  * Text nodes violate a couple assumptions that React makes about components:
  *
@@ -54,25 +54,23 @@ _assign(ReactDOMTextComponent.prototype, {
    * @internal
    */
   mountComponent: function (transaction, hostParent, hostContainerInfo, context) {
-    var domID = hostContainerInfo._idCounter++;
-    var openingValue = ' react-text: ' + domID + ' ';
+    // var domID = hostContainerInfo._idCounter++;
+    var openingValue = ' react-text: ' + 'xxxx' + ' ';
     var closingValue = ' /react-text ';
-    this._domID = domID;
-    this._hostParent = hostParent;
-    if (transaction.useCreateElement) {
-      var ownerDocument = hostContainerInfo._ownerDocument;
-      var openingComment = ownerDocument.createComment(openingValue);
-      var closingComment = ownerDocument.createComment(closingValue);
-      var lazyTree = DOMLazyTree(ownerDocument.createDocumentFragment());
-      DOMLazyTree.queueChild(lazyTree, DOMLazyTree(openingComment));
-      if (this._stringText) {
-        DOMLazyTree.queueChild(lazyTree, DOMLazyTree(ownerDocument.createTextNode(this._stringText)));
-      }
-      DOMLazyTree.queueChild(lazyTree, DOMLazyTree(closingComment));
-      ReactDOMComponentTree.precacheNode(this, openingComment);
-      this._closingComment = closingComment;
-      return lazyTree;
+    // this._domID = domID;
+    // this._hostParent = hostParent;
+    var ownerDocument = document;
+    var openingComment = ownerDocument.createComment(openingValue);
+    var closingComment = ownerDocument.createComment(closingValue);
+    var lazyTree = DOMLazyTree(ownerDocument.createDocumentFragment());
+    DOMLazyTree.queueChild(lazyTree, DOMLazyTree(openingComment));
+    if (this._stringText) {
+      DOMLazyTree.queueChild(lazyTree, DOMLazyTree(ownerDocument.createTextNode(this._stringText)));
     }
+    DOMLazyTree.queueChild(lazyTree, DOMLazyTree(closingComment));
+    ReactDOMComponentTree.precacheNode(this, openingComment);
+    this._closingComment = closingComment;
+    return lazyTree;
   },
 
   /**

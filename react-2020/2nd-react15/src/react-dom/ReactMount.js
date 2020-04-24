@@ -12,9 +12,9 @@ var ReactMount = {
         // return componentInstance;
     },
     mountComponentIntoNode: function (wrapperInstance, container, transaction, shouldReuseMarkup, context) {
-        debugger
         var transaction = ReactUpdates.ReactReconcileTransaction.getPooled();
         var markup = ReactReconciler.mountComponent(wrapperInstance, transaction, null, null, context);
+        container.appendChild(markup.node)
         // var markup = ReactReconciler.mountComponent(wrapperInstance, transaction, null, ReactDOMContainerInfo(wrapperInstance, container), context);
         // wrapperInstance._renderedComponent._topLevelWrapper = wrapperInstance;
         // ReactMount._mountImageIntoNode(markup, container, wrapperInstance, shouldReuseMarkup, transaction);

@@ -14,22 +14,23 @@ var _assign = require('object-assign');
 
 var CSSPropertyOperations = require('./dom/CSSPropertyOperations');
 var DOMLazyTree = require('./dom/DOMLazyTree');
-var DOMNamespaces = require('./dom/DOMNamespaces');
 var DOMProperty = require('./dom/DOMProperty');
 var DOMPropertyOperations = require('./dom/DOMPropertyOperations');
 var ReactDOMComponentTree = require('./dom/ReactDOMComponentTree');
 
 
-var EventPluginHub = require('./EventPluginHub');
+// var EventPluginHub = require('./EventPluginHub');
 var EventPluginRegistry = require('./EventPluginRegistry');
-var ReactBrowserEventEmitter = require('./ReactBrowserEventEmitter');
+// var ReactBrowserEventEmitter = require('./ReactBrowserEventEmitter');
 var ReactMultiChild = require('./ReactMultiChild');
 
 
-
-// var ReactDOMComponentFlags = require('./ReactDOMComponentFlags');
-// var Flags = ReactDOMComponentFlags;
-var deleteListener = EventPluginHub.deleteListener;
+// 假的
+var deleteListener = function(){}
+// var EventPluginRegistry = function(){}
+var ReactBrowserEventEmitter = { listenTo:()=>{}}
+///end
+// var deleteListener = EventPluginHub.deleteListener;
 var getNode = ReactDOMComponentTree.getNodeFromInstance;
 var listenTo = ReactBrowserEventEmitter.listenTo;
 var registrationNameModules = EventPluginRegistry.registrationNameModules;
@@ -49,20 +50,20 @@ var RESERVED_PROPS = {
 var DOC_FRAGMENT_TYPE = 11;
 
 function enqueuePutListener(inst, registrationName, listener, transaction) {
-  var containerInfo = inst._hostContainerInfo;
-  var isDocumentFragment = containerInfo._node && containerInfo._node.nodeType === DOC_FRAGMENT_TYPE;
-  var doc = isDocumentFragment ? containerInfo._node : containerInfo._ownerDocument;
-  listenTo(registrationName, doc);
-  transaction.getReactMountReady().enqueue(putListener, {
-    inst: inst,
-    registrationName: registrationName,
-    listener: listener
-  });
+  // var containerInfo = inst._hostContainerInfo;
+  // var isDocumentFragment = containerInfo._node && containerInfo._node.nodeType === DOC_FRAGMENT_TYPE;
+  // var doc = isDocumentFragment ? containerInfo._node : containerInfo._ownerDocument;
+  // listenTo(registrationName, doc);
+  // transaction.getReactMountReady().enqueue(putListener, {
+  //   inst: inst,
+  //   registrationName: registrationName,
+  //   listener: listener
+  // });
 }
 
 function putListener() {
   var listenerToPut = this;
-  EventPluginHub.putListener(listenerToPut.inst, listenerToPut.registrationName, listenerToPut.listener);
+  // EventPluginHub.putListener(listenerToPut.inst, listenerToPut.registrationName, listenerToPut.listener);
 }
 
 var validatedTagCache = {};
@@ -106,7 +107,7 @@ function ReactDOMComponent(element) {
   this._hostNode = null;
   this._hostParent = null;
   this._rootNodeID = 0;
-  this._domID = 0;
+  // this._domID = 0;
   this._hostContainerInfo = null;
   this._wrapperState = null;
   this._topLevelWrapper = null;
@@ -128,7 +129,7 @@ ReactDOMComponent.Mixin = {
    */
   mountComponent: function (transaction, hostParent, hostContainerInfo, context) {
     this._rootNodeID = globalIdCounter++;
-    this._domID = hostContainerInfo._idCounter++;
+    // this._domID = hostContainerInfo._idCounter++;
     this._hostParent = hostParent;
     this._hostContainerInfo = hostContainerInfo;
 
@@ -136,47 +137,24 @@ ReactDOMComponent.Mixin = {
     // We create tags in the namespace of their parent container, except HTML
     // tags get no namespace.
     // var namespaceURI;
-    var parentTag;
-    if (hostParent != null) {
-      parentTag = hostParent._tag;
-    } else if (hostContainerInfo._tag) {
-      parentTag = hostContainerInfo._tag;
-    }
-    var namespaceURI =  this._namespaceURI = "http://www.w3.org/1999/xhtml";
-
+    // var parentTag;
+    // if (hostParent != null) {
+    //   parentTag = hostParent._tag;
+    // } else if (hostContainerInfo._tag) {
+    //   parentTag = hostContainerInfo._tag;
+    // }
+    debugger
     var mountImage;
-    if (transaction.useCreateElement) {
-      var ownerDocument = hostContainerInfo._ownerDocument;
-      var el;
-      if (namespaceURI === DOMNamespaces.html) {
-        if (this._tag === 'script') {
-          // Create the script via .innerHTML so its "parser-inserted" flag is
-          // set to true and it does not execute
-          var div = ownerDocument.createElement('div');
-          var type = this._currentElement.type;
-          div.innerHTML = '<' + type + '></' + type + '>';
-          el = div.removeChild(div.firstChild);
-        } else if (props.is) {
-          el = ownerDocument.createElement(this._currentElement.type, props.is);
-        } else {
-          // Separate else branch instead of using `props.is || undefined` above becuase of a Firefox bug.
-          // See discussion in https://github.com/facebook/react/pull/6896
-          // and discussion in https://bugzilla.mozilla.org/show_bug.cgi?id=1276240
-          el = ownerDocument.createElement(this._currentElement.type);
-        }
-      } else {
-        el = ownerDocument.createElementNS(namespaceURI, this._currentElement.type);
-      }
-      ReactDOMComponentTree.precacheNode(this, el);
-      // this._flags |= Flags.hasCachedChildNodes;
-      if (!this._hostParent) {
-        DOMPropertyOperations.setAttributeForRoot(el);
-      }
-      this._updateDOMProperties(null, props, transaction);
-      var lazyTree = DOMLazyTree(el);
-      this._createInitialChildren(transaction, props, context, lazyTree);
-      mountImage = lazyTree;
+    // var ownerDocument = hostContainerInfo._ownerDocument;
+    var el = document.createElement(this._currentElement.type);
+    ReactDOMComponentTree.precacheNode(this, el);
+    if (!this._hostParent) {
+      DOMPropertyOperations.setAttributeForRoot(el);
     }
+    this._updateDOMProperties(null, props, transaction);
+    var lazyTree = DOMLazyTree(el);
+    this._createInitialChildren(transaction, props, context, lazyTree);
+    mountImage = lazyTree;
 
     return mountImage;
   },
@@ -277,7 +255,7 @@ ReactDOMComponent.Mixin = {
           // Only call deleteListener if there was a listener previously or
           // else willDeleteListener gets called when there wasn't actually a
           // listener (e.g., onClick={null})
-          deleteListener(this, propKey);
+          // deleteListener(this, propKey);
         }
       } else if (isCustomComponent(this._tag, lastProps)) {
         if (!RESERVED_PROPS.hasOwnProperty(propKey)) {
@@ -401,9 +379,9 @@ ReactDOMComponent.Mixin = {
   unmountComponent: function (safely) {
     this.unmountChildren(safely);
     ReactDOMComponentTree.uncacheNode(this);
-    EventPluginHub.deleteAllListeners(this);
+    // EventPluginHub.deleteAllListeners(this);
     this._rootNodeID = 0;
-    this._domID = 0;
+    // this._domID = 0;
     this._wrapperState = null;
 
   },

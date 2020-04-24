@@ -15,7 +15,6 @@ var React = require('react/lib/React');
 var ReactComponentEnvironment = require('./injection/ReactComponentEnvironment');
 var ReactReconciler = require('./ReactReconciler');
 
-var ReactCurrentOwner = require('react/lib/ReactCurrentOwner');
 var ReactInstanceMap = require('./ReactInstanceMap');
 var ReactNodeTypes = require('./ReactNodeTypes');
 var emptyObject = require('fbjs/lib/emptyObject');
@@ -224,26 +223,7 @@ var ReactCompositeComponent = {
   },
 
   performInitialMountWithErrorHandling: function (renderedElement, hostParent, hostContainerInfo, transaction, context) {
-    var markup;
-    var checkpoint = transaction.checkpoint();
-    try {
-      markup = this.performInitialMount(renderedElement, hostParent, hostContainerInfo, transaction, context);
-    } catch (e) {
-      // Roll back to checkpoint, handle error (which may add items to the transaction), and take a new checkpoint
-      transaction.rollback(checkpoint);
-      this._instance.unstable_handleError(e);
-      if (this._pendingStateQueue) {
-        this._instance.state = this._processPendingState(this._instance.props, this._instance.context);
-      }
-      checkpoint = transaction.checkpoint();
-
-      this._renderedComponent.unmountComponent(true);
-      transaction.rollback(checkpoint);
-
-      // Try again - we've informed the component about the error, so they can render an error message this time.
-      // If this throws again, the error will bubble up (and can be caught by a higher error boundary).
-      markup = this.performInitialMount(renderedElement, hostParent, hostContainerInfo, transaction, context);
-    }
+    var markup = this.performInitialMount(renderedElement, hostParent, hostContainerInfo, transaction, context);
     return markup;
   },
 
@@ -495,11 +475,6 @@ var ReactCompositeComponent = {
         }
       }
     }
-
-    if (process.env.NODE_ENV !== 'production') {
-      process.env.NODE_ENV !== 'production' ? warning(shouldUpdate !== undefined, '%s.shouldComponentUpdate(): Returned undefined instead of a ' + 'boolean value. Make sure to return true or false.', this.getName() || 'ReactCompositeComponent') : void 0;
-    }
-
     this._updateBatchNumber = null;
     if (shouldUpdate) {
       this._pendingForceUpdate = false;

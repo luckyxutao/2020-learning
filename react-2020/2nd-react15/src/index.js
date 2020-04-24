@@ -1,7 +1,7 @@
 // import React, { Component } from './react';
 // import ReactDOM from './react-dom';
 import React, { Component } from 'react';
-import ReactDOM from './react-dom';
+import ReactDOM from 'react-dom';
 
 class ChildMan extends React.Component {
   // shouldComponentUpdate(nextProps,nextState){
@@ -107,5 +107,5 @@ class Counter extends React.Component {
   }
 }
 let element = React.createElement(Counter, {});
-debugger
+// debugger
 ReactDOM.render(element, document.getElementById('root'))

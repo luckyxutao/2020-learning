@@ -15,15 +15,15 @@
 // var EnterLeaveEventPlugin = require('./EnterLeaveEventPlugin');
 // var HTMLDOMPropertyConfig = require('./HTMLDOMPropertyConfig');
 var ReactComponentBrowserEnvironment = require('./ReactComponentBrowserEnvironment');
-// var ReactDOMComponent = require('./ReactDOMComponent');
+var ReactDOMComponent = require('../ReactDOMComponent');
 // var ReactDOMComponentTree = require('./ReactDOMComponentTree');
 // var ReactDOMEmptyComponent = require('./ReactDOMEmptyComponent');
 // var ReactDOMTreeTraversal = require('./ReactDOMTreeTraversal');
-// var ReactDOMTextComponent = require('./ReactDOMTextComponent');
+var ReactDOMTextComponent = require('./ReactDOMTextComponent');
 // var ReactDefaultBatchingStrategy = require('./ReactDefaultBatchingStrategy');
 // var ReactEventListener = require('./ReactEventListener');
 var ReactInjection = require('./ReactInjection');
-// var ReactReconcileTransaction = require('./ReactReconcileTransaction');
+var ReactReconcileTransaction = require('../ReactReconcileTransaction');
 // var SVGDOMPropertyConfig = require('./SVGDOMPropertyConfig');
 // var SelectEventPlugin = require('./SelectEventPlugin');
 // var SimpleEventPlugin = require('./SimpleEventPlugin');
@@ -60,9 +60,9 @@ function inject() {
   //   BeforeInputEventPlugin: BeforeInputEventPlugin
   // });
 
-  // ReactInjection.HostComponent.injectGenericComponentClass(ReactDOMComponent);
+  ReactInjection.HostComponent.injectGenericComponentClass(ReactDOMComponent);
 
-  // ReactInjection.HostComponent.injectTextComponentClass(ReactDOMTextComponent);
+  ReactInjection.HostComponent.injectTextComponentClass(ReactDOMTextComponent);
 
   // ReactInjection.DOMProperty.injectDOMPropertyConfig(ARIADOMPropertyConfig);
   // ReactInjection.DOMProperty.injectDOMPropertyConfig(HTMLDOMPropertyConfig);
@@ -71,8 +71,7 @@ function inject() {
   // ReactInjection.EmptyComponent.injectEmptyComponentFactory(function (instantiate) {
   //   return new ReactDOMEmptyComponent(instantiate);
   // });
-
-  // ReactInjection.Updates.injectReconcileTransaction(ReactReconcileTransaction);
+  ReactInjection.Updates.injectReconcileTransaction(ReactReconcileTransaction);
   // ReactInjection.Updates.injectBatchingStrategy(ReactDefaultBatchingStrategy);
 
   ReactInjection.Component.injectEnvironment(ReactComponentBrowserEnvironment);

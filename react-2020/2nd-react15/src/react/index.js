@@ -1,15 +1,13 @@
-// import { Component } from './ReactBaseClasses'
-// import {map} from './ReactChildren';
-import {createElement} from './ReactElement'
-const React = {
-    createElement,
-    // Component,
-    // Children:{
-    //     map
-    // }
-};
+var ReactElement = require('./ReactElement');
 
-export {
-    // Component
-}
+var ReactBaseClasses = require('./ReactBaseClasses');
+var createElement = ReactElement.createElement;
+var cloneElement = ReactElement.cloneElement;
+
+const React = {
+    createElement: createElement,
+    cloneElement: cloneElement,
+    Component: ReactBaseClasses.Component,
+    PureComponent: ReactBaseClasses.PureComponent,
+};
 export default React;

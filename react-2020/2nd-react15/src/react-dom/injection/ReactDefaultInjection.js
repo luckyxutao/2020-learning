@@ -11,9 +11,12 @@
 // var ARIADOMPropertyConfig = require('./ARIADOMPropertyConfig');
 // var BeforeInputEventPlugin = require('./BeforeInputEventPlugin');
 // var ChangeEventPlugin = require('./ChangeEventPlugin');
-var DefaultEventPluginOrder = require('../event/DefaultEventPluginOrder');
+// var SVGDOMPropertyConfig = require('./SVGDOMPropertyConfig');
+// var SelectEventPlugin = require('./SelectEventPlugin');
 // var EnterLeaveEventPlugin = require('./EnterLeaveEventPlugin');
 // var HTMLDOMPropertyConfig = require('./HTMLDOMPropertyConfig');
+var DefaultEventPluginOrder = require('../event/DefaultEventPluginOrder');
+
 var ReactComponentBrowserEnvironment = require('./ReactComponentBrowserEnvironment');
 var ReactDOMComponent = require('../ReactDOMComponent');
 var ReactDOMComponentTree = require('../dom/ReactDOMComponentTree');
@@ -24,8 +27,7 @@ var ReactDefaultBatchingStrategy = require('../ReactDefaultBatchingStrategy');
 var ReactEventListener = require('../event/ReactEventListener');
 var ReactInjection = require('./ReactInjection');
 var ReactReconcileTransaction = require('../ReactReconcileTransaction');
-// var SVGDOMPropertyConfig = require('./SVGDOMPropertyConfig');
-// var SelectEventPlugin = require('./SelectEventPlugin');
+
 var SimpleEventPlugin = require('../event/SimpleEventPlugin');
 
 var alreadyInjected = false;

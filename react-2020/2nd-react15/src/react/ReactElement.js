@@ -1,4 +1,4 @@
-
+var REACT_ELEMENT_TYPE = require('./ReactElementSymbol');
 function hasValidRef(config) {
     return config.ref !== undefined;
 }
@@ -79,3 +79,5 @@ ReactElement.createElement = function (type, config, children) {
     }
     return ReactElement(type, key, ref, self, source, null, props);
 };
+
+module.exports = ReactElement;

@@ -148,7 +148,6 @@ var ReactCompositeComponent = {
     var publicContext = this._processContext(context);
 
     var Component = this._currentElement.type;
-
     var updateQueue = transaction.getUpdateQueue();
 
     // Initialize the public class

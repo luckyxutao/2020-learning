@@ -13,7 +13,7 @@
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var PooledClass = require('./utils/PooledClass');
+var PooledClass = require('./PooledClass');
 
 // var invariant = require('fbjs/lib/invariant');
 

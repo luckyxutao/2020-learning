@@ -12,7 +12,7 @@ var _assign = require('object-assign');
 
 var EventListener = require('fbjs/lib/EventListener');
 var ExecutionEnvironment = require('fbjs/lib/ExecutionEnvironment');
-var PooledClass = require('../PooledClass');
+var PooledClass = require('../utils/PooledClass');
 var ReactDOMComponentTree = require('../dom/ReactDOMComponentTree');
 var ReactUpdates = require('../ReactUpdates');
 

@@ -10,7 +10,7 @@
 
 var _assign = require('object-assign');
 
-var PooledClass = require('../PooledClass');
+var PooledClass = require('../utils/PooledClass');
 
 var emptyFunction = require('fbjs/lib/emptyFunction');
 var warning = require('fbjs/lib/warning');

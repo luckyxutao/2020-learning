@@ -15,11 +15,9 @@ var PooledClass = require('./utils/PooledClass');
 var ReactReconciler = require('./ReactReconciler');
 var Transaction = require('./Transaction');
 
-var invariant = require('fbjs/lib/invariant');
 
 var dirtyComponents = [];
 var updateBatchNumber = 0;
-var asapCallbackQueue = CallbackQueue.getPooled();
 var asapEnqueued = false;
 
 var batchingStrategy = null;
@@ -132,22 +130,7 @@ function runBatchedUpdates(transaction) {
     var callbacks = component._pendingCallbacks;
     component._pendingCallbacks = null;
 
-    var markerName;
-    // if (ReactFeatureFlags.logTopLevelRenders) {
-    //   var namedComponent = component;
-    //   // Duck type TopLevelWrapper. This is probably always true.
-    //   if (component._currentElement.type.isReactTopLevelWrapper) {
-    //     namedComponent = component._renderedComponent;
-    //   }
-    //   markerName = 'React update: ' + namedComponent.getName();
-    //   console.time(markerName);
-    // }
-
     ReactReconciler.performUpdateIfNecessary(component, transaction.reconcileTransaction, updateBatchNumber);
-
-    // if (markerName) {
-    //   console.timeEnd(markerName);
-    // }
 
     if (callbacks) {
       for (var j = 0; j < callbacks.length; j++) {
@@ -167,14 +150,6 @@ var flushBatchedUpdates = function () {
       var transaction = ReactUpdatesFlushTransaction.getPooled();
       transaction.perform(runBatchedUpdates, null, transaction);
       ReactUpdatesFlushTransaction.release(transaction);
-    }
-
-    if (asapEnqueued) {
-      asapEnqueued = false;
-      var queue = asapCallbackQueue;
-      asapCallbackQueue = CallbackQueue.getPooled();
-      queue.notifyAll();
-      CallbackQueue.release(queue);
     }
   }
 };
@@ -203,16 +178,6 @@ function enqueueUpdate(component) {
   }
 }
 
-/**
- * Enqueue a callback to be run at the end of the current batching cycle. Throws
- * if no updates are currently being performed.
- */
-function asap(callback, context) {
-  invariant(batchingStrategy.isBatchingUpdates, "ReactUpdates.asap: Can't enqueue an asap callback in a context where" + 'updates are not being batched.');
-  asapCallbackQueue.enqueue(callback, context);
-  asapEnqueued = true;
-}
-
 var ReactUpdatesInjection = {
   injectReconcileTransaction: function (ReconcileTransaction) {
     // !ReconcileTransaction ? process.env.NODE_ENV !== 'production' ? invariant(false, 'ReactUpdates: must provide a reconcile transaction class') : _prodInvariant('126') : void 0;
@@ -239,8 +204,7 @@ var ReactUpdates = {
   batchedUpdates: batchedUpdates,
   enqueueUpdate: enqueueUpdate,
   flushBatchedUpdates: flushBatchedUpdates,
-  injection: ReactUpdatesInjection,
-  asap: asap
+  injection: ReactUpdatesInjection
 };
 
 module.exports = ReactUpdates;

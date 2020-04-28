@@ -12,7 +12,7 @@ var ReactReconciler = require('./ReactReconciler');
 
 var instantiateReactComponent = require('./instantiateReactComponent');
 var shouldUpdateReactComponent = require('./shouldUpdateReactComponent');
-var traverseAllChildren = require('./traverseAllChildren');
+var traverseAllChildren = require('./utils/traverseAllChildren');
 
 function instantiateChild(childInstances, child, name, selfDebugID) {
   // We found a component instance.

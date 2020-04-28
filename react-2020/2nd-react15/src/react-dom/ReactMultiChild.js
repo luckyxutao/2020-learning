@@ -14,7 +14,7 @@ var ReactReconciler = require('./ReactReconciler');
 var ReactChildReconciler = require('./ReactChildReconciler');
 
 // var emptyFunction = require('fbjs/lib/emptyFunction');
-var flattenChildren = require('./flattenChildren');
+var flattenChildren = require('./utils/flattenChildren');
 // var invariant = require('fbjs/lib/invariant');
 
 /**

@@ -14,7 +14,7 @@ var EventPluginUtils = require('../event/EventPluginUtils');
 var ReactComponentEnvironment = require('./ReactComponentEnvironment');
 // var ReactEmptyComponent = require('./ReactEmptyComponent');
 var ReactBrowserEventEmitter = require('../event/ReactBrowserEventEmitter');
-var ReactHostComponent = require('../ReactHostComponent');
+var ReactHostComponent = require('./ReactHostComponent');
 var ReactUpdates = require('../ReactUpdates');
 var ReactInjection = {
   Component: ReactComponentEnvironment.injection,

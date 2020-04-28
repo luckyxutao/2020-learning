@@ -13,7 +13,7 @@ var _assign = require('object-assign');
 var CallbackQueue = require('./utils/CallbackQueue');
 var PooledClass = require('./utils/PooledClass');
 var ReactReconciler = require('./ReactReconciler');
-var Transaction = require('./Transaction');
+var Transaction = require('./utils/Transaction');
 
 
 var dirtyComponents = [];

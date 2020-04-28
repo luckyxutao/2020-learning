@@ -15,7 +15,7 @@ var PooledClass = require('./utils/PooledClass');
 // var ReactBrowserEventEmitter = require('./ReactBrowserEventEmitter');
 // var ReactInputSelection = require('./ReactInputSelection');
 // var ReactInstrumentation = require('./ReactInstrumentation');
-var Transaction = require('./Transaction');
+var Transaction = require('./utils/Transaction');
 var ReactUpdateQueue = require('./ReactUpdateQueue');
 
 // /**

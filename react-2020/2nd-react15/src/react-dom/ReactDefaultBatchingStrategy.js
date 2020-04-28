@@ -11,7 +11,7 @@
 var _assign = require('object-assign');
 
 var ReactUpdates = require('./ReactUpdates');
-var Transaction = require('./Transaction');
+var Transaction = require('./utils/Transaction');
 
 var emptyFunction = require('fbjs/lib/emptyFunction');
 

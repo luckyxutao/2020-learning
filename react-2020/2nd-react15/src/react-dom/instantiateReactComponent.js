@@ -1,7 +1,7 @@
 var _assign = require('object-assign')
 var ReactCompositeComponent = require('./ReactCompositeComponent');
 var ReactEmptyComponent = require('./ReactEmptyComponent');
-var ReactHostComponent = require('./ReactHostComponent');
+var ReactHostComponent = require('./injection/ReactHostComponent');
 
 // To avoid a cyclic dependency, we create the final class in this module
 var ReactCompositeComponentWrapper = function (element) {

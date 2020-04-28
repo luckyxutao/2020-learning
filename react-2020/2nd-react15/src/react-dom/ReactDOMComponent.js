@@ -54,7 +54,7 @@ function enqueuePutListener(inst, registrationName, listener, transaction) {
   // var isDocumentFragment = containerInfo._node && containerInfo._node.nodeType === DOC_FRAGMENT_TYPE;
   var doc = document;
   listenTo(registrationName, doc);
-  debugger
+  // debugger
   transaction.getReactMountReady().enqueue(putListener, {
     inst: inst,
     registrationName: registrationName,

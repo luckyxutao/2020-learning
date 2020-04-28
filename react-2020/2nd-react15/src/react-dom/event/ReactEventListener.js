@@ -137,7 +137,7 @@ var ReactEventListener = {
     if (!ReactEventListener._enabled) {
       return;
     }
-    debugger
+    // debugger
     var bookKeeping = TopLevelCallbackBookKeeping.getPooled(topLevelType, nativeEvent);
     try {
       // Event queue being processed in the same cycle allows

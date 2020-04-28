@@ -80,21 +80,22 @@ class Counter extends React.Component {
   }
 
   onClick = () => {
-    debugger
-    this.setState({
-      number:this.state.number+1
-    });
-    this.setState({
-      number:this.state.number+1
-    });
-    this.setState({
-      number:this.state.number+1
-    })
+    alert('xxxxx')
+    // debugger
+    // this.setState({
+    //   number:this.state.number+1
+    // });
+    // this.setState({
+    //   number:this.state.number+1
+    // });
+    // this.setState({
+    //   number:this.state.number+1
+    // })
   }
   render() {
       return (
         <div style={{ padding: '20px' }}>
-          <ChildMan number={this.state.number} />
+          {/* <ChildMan number={this.state.number} /> */}
           <button onClick={this.onClick}>button</button>
         </div>
       )

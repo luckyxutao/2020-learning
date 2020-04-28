@@ -125,7 +125,7 @@ var EventPluginHub = {
    * @param {function} listener The callback to store.
    */
   putListener: function (inst, registrationName, listener) {
-
+    debugger
     var key = getDictionaryKey(inst);
     var bankForRegistrationName = listenerBank[registrationName] || (listenerBank[registrationName] = {});
     bankForRegistrationName[key] = listener;
@@ -243,24 +243,14 @@ var EventPluginHub = {
     // events get enqueued while processing.
     var processingEventQueue = eventQueue;
     eventQueue = null;
-    if (simulated) {
-      forEachAccumulated(processingEventQueue, executeDispatchesAndReleaseSimulated);
-    } else {
-      forEachAccumulated(processingEventQueue, executeDispatchesAndReleaseTopLevel);
-    }
+    forEachAccumulated(processingEventQueue, executeDispatchesAndReleaseTopLevel);
+    // if (simulated) {
+    //   forEachAccumulated(processingEventQueue, executeDispatchesAndReleaseSimulated);
+    // } else {
+    //   forEachAccumulated(processingEventQueue, executeDispatchesAndReleaseTopLevel);
+    // }
     // This would be a good time to rethrow if any of the event handlers threw.
     // ReactErrorUtils.rethrowCaughtError();
-  },
-
-  /**
-   * These are needed for tests only. Do not use!
-   */
-  __purge: function () {
-    listenerBank = {};
-  },
-
-  __getListenerBank: function () {
-    return listenerBank;
   }
 };
 

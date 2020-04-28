@@ -19,18 +19,18 @@ var DOMPropertyOperations = require('./dom/DOMPropertyOperations');
 var ReactDOMComponentTree = require('./dom/ReactDOMComponentTree');
 
 
-// var EventPluginHub = require('./EventPluginHub');
-var EventPluginRegistry = require('./EventPluginRegistry');
-// var ReactBrowserEventEmitter = require('./ReactBrowserEventEmitter');
+var EventPluginHub = require('./event/EventPluginHub');
+var EventPluginRegistry = require('./event/EventPluginRegistry');
+var ReactBrowserEventEmitter = require('./event/ReactBrowserEventEmitter');
 var ReactMultiChild = require('./ReactMultiChild');
 
 
 // 假的
-var deleteListener = function(){}
+// var deleteListener = function(){}
 // var EventPluginRegistry = function(){}
-var ReactBrowserEventEmitter = { listenTo:()=>{}}
+// var ReactBrowserEventEmitter = { listenTo:()=>{}}
 ///end
-// var deleteListener = EventPluginHub.deleteListener;
+var deleteListener = EventPluginHub.deleteListener;
 var getNode = ReactDOMComponentTree.getNodeFromInstance;
 var listenTo = ReactBrowserEventEmitter.listenTo;
 var registrationNameModules = EventPluginRegistry.registrationNameModules;
@@ -47,23 +47,24 @@ var RESERVED_PROPS = {
 };
 
 // Node type for document fragments (Node.DOCUMENT_FRAGMENT_NODE).
-var DOC_FRAGMENT_TYPE = 11;
+// var DOC_FRAGMENT_TYPE = 11;
 
 function enqueuePutListener(inst, registrationName, listener, transaction) {
   // var containerInfo = inst._hostContainerInfo;
   // var isDocumentFragment = containerInfo._node && containerInfo._node.nodeType === DOC_FRAGMENT_TYPE;
-  // var doc = isDocumentFragment ? containerInfo._node : containerInfo._ownerDocument;
-  // listenTo(registrationName, doc);
-  // transaction.getReactMountReady().enqueue(putListener, {
-  //   inst: inst,
-  //   registrationName: registrationName,
-  //   listener: listener
-  // });
+  var doc = document;
+  listenTo(registrationName, doc);
+  debugger
+  transaction.getReactMountReady().enqueue(putListener, {
+    inst: inst,
+    registrationName: registrationName,
+    listener: listener
+  });
 }
 
 function putListener() {
   var listenerToPut = this;
-  // EventPluginHub.putListener(listenerToPut.inst, listenerToPut.registrationName, listenerToPut.listener);
+  EventPluginHub.putListener(listenerToPut.inst, listenerToPut.registrationName, listenerToPut.listener);
 }
 
 var validatedTagCache = {};
@@ -143,7 +144,7 @@ ReactDOMComponent.Mixin = {
     // } else if (hostContainerInfo._tag) {
     //   parentTag = hostContainerInfo._tag;
     // }
-    debugger
+    // debugger
     var mountImage;
     // var ownerDocument = hostContainerInfo._ownerDocument;
     var el = document.createElement(this._currentElement.type);
@@ -255,7 +256,7 @@ ReactDOMComponent.Mixin = {
           // Only call deleteListener if there was a listener previously or
           // else willDeleteListener gets called when there wasn't actually a
           // listener (e.g., onClick={null})
-          // deleteListener(this, propKey);
+          deleteListener(this, propKey);
         }
       } else if (isCustomComponent(this._tag, lastProps)) {
         if (!RESERVED_PROPS.hasOwnProperty(propKey)) {
@@ -265,6 +266,7 @@ ReactDOMComponent.Mixin = {
         DOMPropertyOperations.deleteValueForProperty(getNode(this), propKey);
       }
     }
+
     for (propKey in nextProps) {
       var nextProp = nextProps[propKey];
       var lastProp = propKey === STYLE ? this._previousStyleCopy : lastProps != null ? lastProps[propKey] : undefined;

@@ -11,22 +11,22 @@
 // var ARIADOMPropertyConfig = require('./ARIADOMPropertyConfig');
 // var BeforeInputEventPlugin = require('./BeforeInputEventPlugin');
 // var ChangeEventPlugin = require('./ChangeEventPlugin');
-// var DefaultEventPluginOrder = require('./DefaultEventPluginOrder');
+var DefaultEventPluginOrder = require('../event/DefaultEventPluginOrder');
 // var EnterLeaveEventPlugin = require('./EnterLeaveEventPlugin');
 // var HTMLDOMPropertyConfig = require('./HTMLDOMPropertyConfig');
 var ReactComponentBrowserEnvironment = require('./ReactComponentBrowserEnvironment');
 var ReactDOMComponent = require('../ReactDOMComponent');
-// var ReactDOMComponentTree = require('./ReactDOMComponentTree');
+var ReactDOMComponentTree = require('../dom/ReactDOMComponentTree');
 // var ReactDOMEmptyComponent = require('./ReactDOMEmptyComponent');
-// var ReactDOMTreeTraversal = require('./ReactDOMTreeTraversal');
+var ReactDOMTreeTraversal = require('../dom/ReactDOMTreeTraversal');
 var ReactDOMTextComponent = require('./../ReactDOMTextComponent');
-// var ReactDefaultBatchingStrategy = require('./ReactDefaultBatchingStrategy');
-// var ReactEventListener = require('./ReactEventListener');
+var ReactDefaultBatchingStrategy = require('../ReactDefaultBatchingStrategy');
+var ReactEventListener = require('../event/ReactEventListener');
 var ReactInjection = require('./ReactInjection');
 var ReactReconcileTransaction = require('../ReactReconcileTransaction');
 // var SVGDOMPropertyConfig = require('./SVGDOMPropertyConfig');
 // var SelectEventPlugin = require('./SelectEventPlugin');
-// var SimpleEventPlugin = require('./SimpleEventPlugin');
+var SimpleEventPlugin = require('../event/SimpleEventPlugin');
 
 var alreadyInjected = false;
 
@@ -39,26 +39,26 @@ function inject() {
   }
   alreadyInjected = true;
 
-  // ReactInjection.EventEmitter.injectReactEventListener(ReactEventListener);
+  ReactInjection.EventEmitter.injectReactEventListener(ReactEventListener);
 
   // /**
   //  * Inject modules for resolving DOM hierarchy and plugin ordering.
   //  */
-  // ReactInjection.EventPluginHub.injectEventPluginOrder(DefaultEventPluginOrder);
-  // ReactInjection.EventPluginUtils.injectComponentTree(ReactDOMComponentTree);
-  // ReactInjection.EventPluginUtils.injectTreeTraversal(ReactDOMTreeTraversal);
+  ReactInjection.EventPluginHub.injectEventPluginOrder(DefaultEventPluginOrder);
+  ReactInjection.EventPluginUtils.injectComponentTree(ReactDOMComponentTree);
+  ReactInjection.EventPluginUtils.injectTreeTraversal(ReactDOMTreeTraversal);
 
-  // /**
-  //  * Some important event plugins included by default (without having to require
-  //  * them).
-  //  */
-  // ReactInjection.EventPluginHub.injectEventPluginsByName({
-  //   SimpleEventPlugin: SimpleEventPlugin,
-  //   EnterLeaveEventPlugin: EnterLeaveEventPlugin,
-  //   ChangeEventPlugin: ChangeEventPlugin,
-  //   SelectEventPlugin: SelectEventPlugin,
-  //   BeforeInputEventPlugin: BeforeInputEventPlugin
-  // });
+  /**
+   * Some important event plugins included by default (without having to require
+   * them).
+   */
+  ReactInjection.EventPluginHub.injectEventPluginsByName({
+    SimpleEventPlugin: SimpleEventPlugin,
+    // EnterLeaveEventPlugin: EnterLeaveEventPlugin,
+    // ChangeEventPlugin: ChangeEventPlugin,
+    // SelectEventPlugin: SelectEventPlugin,
+    // BeforeInputEventPlugin: BeforeInputEventPlugin
+  });
 
   ReactInjection.HostComponent.injectGenericComponentClass(ReactDOMComponent);
 
@@ -72,7 +72,7 @@ function inject() {
   //   return new ReactDOMEmptyComponent(instantiate);
   // });
   ReactInjection.Updates.injectReconcileTransaction(ReactReconcileTransaction);
-  // ReactInjection.Updates.injectBatchingStrategy(ReactDefaultBatchingStrategy);
+  ReactInjection.Updates.injectBatchingStrategy(ReactDefaultBatchingStrategy);
 
   ReactInjection.Component.injectEnvironment(ReactComponentBrowserEnvironment);
 }

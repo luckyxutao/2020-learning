@@ -97,14 +97,18 @@ class Counter extends React.Component {
     // })
   }
   render() {
-      return (
-        <div style={{ padding: '20px'}}>
-          {/* <ChildMan number={this.state.number} /> */}
-          <span>{this.state.number}</span>
-          <button style={{backgroundColor:'red' }} onClick={this.onClick}>button</button>
-        </div>
-      )
+    return <About />
+      // return (
+      //   <div style={{ padding: '20px'}}>
+      //     {/* <ChildMan number={this.state.number} /> */}
+      //     <span>{this.state.number}</span>
+      //     <button style={{backgroundColor:'red' }} onClick={this.onClick}>button</button>
+      //   </div>
+      // )
   }
+}
+function About(params) {
+    return <div>About</div>;
 }
 let element = React.createElement(Counter, {});
 // debugger

@@ -17,12 +17,22 @@ let currentRoot = null;//渲染成功之后当前根rootfiber
 
 let deletions = []; //删除的节点我们并不放在effect list里，所以需要单独记录执行 
 export function scheduleRoot(rootFiber) {
-    //至少渲染过一次了
-    if(currentRoot){
+    //第三次渲染了，currentRoot已经有alternamte
+    if(currentRoot && currentRoot.alternate){
+        //当前是第3次，使用上上次的currentRoot
+        workInProgressRoot = currentRoot.alternate;
+        // props更成新的
+        workInProgressRoot.props = rootFiber.props;
+        // alternate指向上一次(第2次)
+        workInProgressRoot.alternate = currentRoot;
+    } else if(currentRoot){//至少渲染过一次了
         //新的fiber alternate指向上一次的root
         rootFiber.alternate = currentRoot;
+        workInProgressRoot = rootFiber;
+    } else {
+        workInProgressRoot = rootFiber;
     }
-    workInProgressRoot = rootFiber;
+    workInProgressRoot.firstEffect = workInProgressRoot.lastEffect = workInProgressRoot.nextEffect = null;
     //{tag:TAG_ROOT, stateNode:container, props:children[element]}
     nextUnitOfWork = workInProgressRoot;
     // rootFiber = rootFiber;
@@ -125,7 +135,11 @@ function updateHostRoot(currentFiber) {
     reconcileChildren(currentFiber, newChildren);
 
 }
-
+/**
+ * 第一次 array->linkList
+ * 第二次 newArr和linkList对比较
+ * 第三次 newLinkList和oldLinkList比较
+ */
 function reconcileChildren(currentFiber, newChildren) {
     let newChildIndex = 0;//新子节点索引
     let prevSibling; //上一个新的子fiber

@@ -1,7 +1,11 @@
 
 export function setProps(dom, oldProps, newProps) {
     for (let key in oldProps) {
-
+        if(key !== 'children'){
+            if(!newProps.hasOwnProperty(key)){
+                dom.removeAttribute(key);
+            }
+        }
     }
     for (let key in newProps) {
         if (key !== 'children') {

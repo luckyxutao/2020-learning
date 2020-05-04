@@ -1,7 +1,7 @@
 
 import { ELEMENT_TEXT } from './constant'
 import UpdateQueue,{ Update } from './UpdateQueue';
-import { scheduleRoot } from './schedule';
+import { scheduleRoot, useReducer, useState } from './schedule';
 
 function createElement(type, config, ...children) {
     delete config.__self;
@@ -40,5 +40,7 @@ Component.prototype.isReactComponent = {};
 
 export default {
     createElement,
-    Component
+    Component,
+    useReducer,
+    useState
 }

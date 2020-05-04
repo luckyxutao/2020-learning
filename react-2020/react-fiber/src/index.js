@@ -1,28 +1,55 @@
 import React from './react';
 import ReactDOM from './react-dom';
 
-class ClassCounter extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { number: 0 };
+// class ClassCounter extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = { number: 0 };
+//   }
+//   onClick = () => {
+//     this.setState(state => ({ number: state.number+1 }));
+//   }
+//   render() {
+//     return (
+//       <div id="counter">
+//         <span>{this.state.number}</span>
+//         <button onClick={this.onClick}>加1</button>
+//       </div>
+//     )
+//   }
+// }
+function reducer(state,action){
+  switch (action.type) {
+    case 'ADD':
+      return { count : state.count + 1 }
+    default:
+      return state;
   }
-  onClick = () => {
-    this.setState(state => ({ number: state.number+1 }));
-  }
-  render() {
-    return (
-      <div id="counter">
-        <span>{this.state.number}</span>
-        <button onClick={this.onClick}>加1</button>
-      </div>
-    )
+}
+function reducer2(state,action){
+  switch (action.type) {
+    case 'ADD':
+      return { number : state.number + 1 }
+    default:
+      return state;
   }
 }
 function FunctionCounter(props){
+  const [numberState,dispatch2] = React.useReducer(reducer2,{number:0});
+  const [countState,setCount] = React.useState({count:0});
+  // const [countState,dispatch] = React.useReducer(reducer,{count:0});
+
   return (
     <div id="counter">
-      <span>0</span>
-      <button>加1</button>
+      <span>number{numberState.number}</span>
+      <span>count{countState.count}</span>
+      <button onClick={()=>dispatch2({type:'ADD'})}>加number1</button>
+      <button onClick={()=>{
+        setCount({
+          ...countState,
+          count :countState.count+1
+        })
+      }}>useState加count</button>
     </div>
   )
 }

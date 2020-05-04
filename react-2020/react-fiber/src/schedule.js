@@ -1,5 +1,6 @@
-import { TAG_HOST, TAG_ROOT, ELEMENT_TEXT, TAG_TEXT,PLACEMENT, DELETION, UPDATE } from "./constant";
+import { TAG_HOST, TAG_ROOT, ELEMENT_TEXT, TAG_TEXT,PLACEMENT, DELETION, UPDATE, TAG_CLASS } from "./constant";
 import {setProps} from './utils';
+import UpdateQueue from "./UpdateQueue";
 /**
  * 
  * 从根节点开始渲染和调试
@@ -96,12 +97,15 @@ function completeUnitOfWork(currentFiber){//第一个完成A1(Text)
  * 2. 创建子fiber
  */
 function beginWork(currentFiber) {
+    //根fiber
     if (currentFiber.tag === TAG_ROOT) {
         updateHostRoot(currentFiber);
-    } else if(currentFiber.tag === TAG_TEXT){
+    } else if(currentFiber.tag === TAG_TEXT){//文本
         updateHostText(currentFiber);
-    } else if(currentFiber.tag === TAG_HOST){
+    } else if(currentFiber.tag === TAG_HOST){//标签
         updateHost(currentFiber);
+    } else if(currentFiber.tag === TAG_CLASS){
+        updateClassComponent(currentFiber);
     }
 }
 function createDOM(currentFiber){
@@ -113,6 +117,20 @@ function createDOM(currentFiber){
         return stateNode;
     }
 }
+
+function updateClassComponent(currentFiber) {
+    if(!currentFiber.stateNode){//类组件的stateNode是组件的实例
+        // 初始化
+        currentFiber.stateNode = new currentFiber.type(currentFiber.props);
+        currentFiber.stateNode.internalFiber = currentFiber;
+        currentFiber.updateQueue = new UpdateQueue();
+    }
+    currentFiber.stateNode.state = currentFiber.updateQueue.forceUpdate(currentFiber.stateNode.state);
+    let renderedElement = currentFiber.stateNode.render();
+    const newChildren = [renderedElement];
+    reconcileChildren(currentFiber,newChildren);
+}
+
 function updateHost(currentFiber){
     if(!currentFiber.stateNode){
         currentFiber.stateNode = createDOM(currentFiber);
@@ -148,6 +166,10 @@ function reconcileChildren(currentFiber, newChildren) {
 
     //如果说当前fiber有alternamte属性，并县域alernate也有child
     let oldFiber = currentFiber.alternate && currentFiber.alternate.child;
+    //老fiber清掉effect
+    if(oldFiber){
+        oldFiber.firstEffect = oldFiber.lastEffect = oldFiber.nextEffect = null;
+    }
     //遍历我们的子虚拟DOM元素数组，为每个虚拟DOM元素创建子fiber
     // 旧children长度可能大于新的，也可能小于新的
     while (newChildIndex < newChildren.length || oldFiber) {
@@ -158,23 +180,39 @@ function reconcileChildren(currentFiber, newChildren) {
         const sameType = oldFiber && newChild && oldFiber.type === newChild.type
         
         let tag;
-        if (newChild && newChild.type === ELEMENT_TEXT) {
+        // 如果
+        if(newChild && typeof newChild.type === 'function' && newChild.type.prototype.isReactComponent){
+            tag = TAG_CLASS;
+        } if (newChild && newChild.type === ELEMENT_TEXT) {
             tag = TAG_TEXT; //文本节点，element='aaaa';
         } else if (newChild && typeof newChild.type === 'string') {
             tag = TAG_HOST;
         }
         //老的fiber和新的vdom类型一样，可以复用老vdom，更新即可
         if(sameType){
-            newFiber = {
-                tag : oldFiber.tag,// TAG_HOST
-                type: oldFiber.type,//div,哪个都行（因为完全相同）
-                props: newChild.props,
-                stateNode: oldFiber.stateNode,//此时还没有创建DOM元素
-                return:currentFiber,//父fiber returnfiber
-                //新fiber的alternamte指向老的fiber节点
-                alternate:oldFiber,
-                effectTag:UPDATE,//副作用标识，render我们会收集副作用,增加\删除、MOVE
-                nextEffect:null, //effectList也是一个单链表，是个指针
+            //如果有上上次的fiber,就拿过来作为这一次的fiber
+            //更新后
+            if(oldFiber.alternate){
+                newFiber = oldFiber.alternate;
+                newFiber.props = newChild.props;
+                newFiber.alternate = oldFiber;//
+                newFiber.effectTag = UPDATE;
+                //用当前状态(上一次而不是上上一次)的updateQeueu
+                newFiber.updateQueue = oldFiber.updateQueue || new UpdateQueue;
+                newFiber.nextEffect = null;
+            } else {
+                newFiber = {
+                    tag : oldFiber.tag,// TAG_HOST
+                    type: oldFiber.type,//div,哪个都行（因为完全相同）
+                    props: newChild.props,
+                    updateQueue: oldFiber.updateQueue || new UpdateQueue,
+                    stateNode: oldFiber.stateNode,//此时还没有创建DOM元素
+                    return:currentFiber,//父fiber returnfiber
+                    //新fiber的alternamte指向老的fiber节点
+                    alternate:oldFiber,
+                    effectTag:UPDATE,//副作用标识，render我们会收集副作用,增加\删除、MOVE
+                    nextEffect:null, //effectList也是一个单链表，是个指针
+                }
             }
         } else {
             /** 不能复用情况 **/
@@ -184,6 +222,7 @@ function reconcileChildren(currentFiber, newChildren) {
                     tag,// TAG_HOST
                     type: newChild.type,//div
                     props: newChild.props,
+                    updateQueue: new UpdateQueue,
                     stateNode: null,//此时还没有创建DOM元素
                     return:currentFiber,//父fiber returnfiber
                     effectTag:PLACEMENT,//副作用标识，render我们会收集副作用,增加\删除、MOVE

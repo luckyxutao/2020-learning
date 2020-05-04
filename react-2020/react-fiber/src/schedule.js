@@ -23,13 +23,24 @@ export function scheduleRoot(rootFiber) {
         //当前是第3次，使用上上次的currentRoot
         workInProgressRoot = currentRoot.alternate;
         // props更成新的
-        workInProgressRoot.props = rootFiber.props;
+    // workInProgressRoot.props = rootFiber.props;
         // alternate指向上一次(第2次)
         workInProgressRoot.alternate = currentRoot;
+        if(rootFiber){
+            //主它的props更新成新的props
+            workInProgressRoot.props = rootFiber.props;
+        }
     } else if(currentRoot){//至少渲染过一次了
-        //新的fiber alternate指向上一次的root
-        rootFiber.alternate = currentRoot;
-        workInProgressRoot = rootFiber;
+        if(rootFiber){
+            //新的fiber alternate指向上一次的root
+            rootFiber.alternate = currentRoot;
+            workInProgressRoot = rootFiber;
+        } else {
+            workInProgressRoot = {
+                ...currentRoot,
+                alternate : currentRoot
+            };
+        }
     } else {
         workInProgressRoot = rootFiber;
     }
@@ -287,24 +298,49 @@ function commitWork(currentFiber){
     if(!currentFiber){
         return;
     }
-    let returnfiber = currentFiber.return;
-    let returnDOM = returnfiber.stateNode;
+    // debugger
+    let returnFiber = currentFiber.return;
+    //向上找父DOM类型stateNode，忽略类组件(stateNode是实例),确保parent是真实DOM
+    while(returnFiber.tag!==TAG_HOST 
+            && returnFiber.tag !== TAG_ROOT
+            && returnFiber.tag !== TAG_TEXT){
+        returnFiber = returnFiber.return; 
+    }
+    let returnDOM = returnFiber.stateNode;
     //添加
     if(currentFiber.effectTag === PLACEMENT){
-        returnDOM.appendChild(currentFiber.stateNode);
+        let nextFiber = currentFiber;
+        //确保要挂载的是真DOM
+        while(nextFiber.tag !== TAG_HOST && nextFiber.tag !== TAG_TEXT && nextFiber.tag !== TAG_ROOT){
+            //如果要挂载的节点不是DOM节点，比如是类组件Fiber,一直找第一个儿子，直到找到一个真实的DOM节点为止
+            nextFiber = nextFiber.child;
+        }
+        returnDOM.appendChild(nextFiber.stateNode);
     } else if( currentFiber.effectTag === DELETION){
-        returnDOM.removeChild(currentFiber.stateNode)
+        commitDeletion(currentFiber,returnDOM);
+        // returnDOM.removeChild(currentFiber.stateNode)
     } else if( currentFiber.effectTag == UPDATE){
         if(currentFiber.type === ELEMENT_TEXT){
             if(currentFiber.alternate.props.text !== currentFiber.props.text){
                 currentFiber.stateNode.textContent = currentFiber.props.text;
             }
         } else {
+            if(currentFiber.tag === TAG_CLASS){
+                return currentFiber.effectTag = null;
+            }
             updateDOM(currentFiber.stateNode,currentFiber.alternate.props,currentFiber.props);
         }
     }
     //清掉
     currentFiber.effectTag = null;
+}
+function commitDeletion(currentFiber,domReturn){
+    if(currentFiber.tag === TAG_HOST || currentFiber.tag === TAG_TEXT){
+        domReturn.removeChild(domReturn,currentFiber.stateNode);
+    } else {
+        //递归删除
+        commitDeletion(currentFiber.child,domReturn);
+    }
 }
 // 告诉浏览器 有空闲时 帮我执行任务
 requestIdleCallback(workLoop, { timeout: 500 })

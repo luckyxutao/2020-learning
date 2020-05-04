@@ -150,7 +150,9 @@ function updateHost(currentFiber){
     reconcileChildren(currentFiber,newChildren);
 }
 function updateDOM(stateNode,lastProps,nextProps) {
-    setProps(stateNode,lastProps,nextProps);
+    if(stateNode.setAttribute){
+        setProps(stateNode,lastProps,nextProps);
+    }
 }
 
 function updateHostText(currentFiber){
@@ -325,9 +327,6 @@ function commitWork(currentFiber){
                 currentFiber.stateNode.textContent = currentFiber.props.text;
             }
         } else {
-            if(currentFiber.tag === TAG_CLASS){
-                return currentFiber.effectTag = null;
-            }
             updateDOM(currentFiber.stateNode,currentFiber.alternate.props,currentFiber.props);
         }
     }

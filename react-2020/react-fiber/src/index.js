@@ -18,9 +18,16 @@ class ClassCounter extends React.Component {
     )
   }
 }
-
+function FunctionCounter(props){
+  return (
+    <div id="counter">
+      <span>0</span>
+      <button>加1</button>
+    </div>
+  )
+}
 ReactDOM.render(
-  <ClassCounter name="计数器" />,
+  <FunctionCounter name="计数器" />,
   document.getElementById('root')
 );
 

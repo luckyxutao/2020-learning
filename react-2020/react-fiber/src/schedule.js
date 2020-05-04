@@ -1,4 +1,4 @@
-import { TAG_HOST, TAG_ROOT, ELEMENT_TEXT, TAG_TEXT,PLACEMENT, DELETION, UPDATE, TAG_CLASS } from "./constant";
+import { TAG_HOST, TAG_ROOT, ELEMENT_TEXT, TAG_TEXT,PLACEMENT, DELETION, UPDATE, TAG_CLASS, TAG_FUNCTION } from "./constant";
 import {setProps} from './utils';
 import UpdateQueue from "./UpdateQueue";
 /**
@@ -117,8 +117,17 @@ function beginWork(currentFiber) {
         updateHost(currentFiber);
     } else if(currentFiber.tag === TAG_CLASS){
         updateClassComponent(currentFiber);
+    } else if( currentFiber.tag === TAG_FUNCTION){
+        updateFunctionComponent(currentFiber);
     }
 }
+
+function updateFunctionComponent(currentFiber){
+    const renderedElement = currentFiber.type(currentFiber.props);
+    const newChildren = [renderedElement];
+    reconcileChildren(currentFiber,newChildren);
+}
+
 function createDOM(currentFiber){
     if(currentFiber.tag === TAG_TEXT){
         return document.createTextNode(currentFiber.props.text);
@@ -193,10 +202,13 @@ function reconcileChildren(currentFiber, newChildren) {
         const sameType = oldFiber && newChild && oldFiber.type === newChild.type
         
         let tag;
-        // 如果
+        // 如果class组件
         if(newChild && typeof newChild.type === 'function' && newChild.type.prototype.isReactComponent){
             tag = TAG_CLASS;
-        } if (newChild && newChild.type === ELEMENT_TEXT) {
+            //函数试组件
+        } else if(newChild && typeof newChild.type === 'function'){
+            tag = TAG_FUNCTION;
+        } else if (newChild && newChild.type === ELEMENT_TEXT) {
             tag = TAG_TEXT; //文本节点，element='aaaa';
         } else if (newChild && typeof newChild.type === 'string') {
             tag = TAG_HOST;
@@ -312,11 +324,17 @@ function commitWork(currentFiber){
     //添加
     if(currentFiber.effectTag === PLACEMENT){
         let nextFiber = currentFiber;
-        //确保要挂载的是真DOM
+        //如果是class不用处理了
+        if(nextFiber.tag === TAG_CLASS || nextFiber.tag === TAG_FUNCTION){
+            currentFiber.effectTag = null;
+            return;
+        }
+        // //确保要挂载的是真DOM，这里其实没啥用
         while(nextFiber.tag !== TAG_HOST && nextFiber.tag !== TAG_TEXT && nextFiber.tag !== TAG_ROOT){
             //如果要挂载的节点不是DOM节点，比如是类组件Fiber,一直找第一个儿子，直到找到一个真实的DOM节点为止
             nextFiber = nextFiber.child;
         }
+        // end
         returnDOM.appendChild(nextFiber.stateNode);
     } else if( currentFiber.effectTag === DELETION){
         commitDeletion(currentFiber,returnDOM);

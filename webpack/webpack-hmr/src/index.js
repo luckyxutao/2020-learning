@@ -1,4 +1,4 @@
-import './client'
+import '../webpack-dev-server/client'
 let root = document.getElementById('root');
 function render(){
    let title = require('./title').default;

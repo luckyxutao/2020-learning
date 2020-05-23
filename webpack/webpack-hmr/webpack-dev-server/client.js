@@ -1,25 +1,10 @@
 let socket = io('/');
 let currentHash;
 let prevHash; //last
-class Emmiter {
-    constructor() {
-        this.listeners = {};
-    }
-    on(type, lisener) {
-        if (!this.listeners[type]) {
-            this.listeners[type] = [];
-        }
-        this.listeners[type].push(lisener);
-    }
-    emit(type){
-        const subsibers = this.listeners[type];
-        subsibers.forEach(fn=>fn())
-    }
-}
-const onConnected = () => {
+const Emmiter = require('./EventEmitter');
 
-};
 let hotEmmiter = new Emmiter();
+
 socket.on('hash', (hash) => {
     currentHash = hash;
 });
@@ -42,7 +27,7 @@ function hotCheck(){
         })
     });
 }
-//用来下载chunk更新
+//jsonp加载chunk文件
 function hotDownloadUpdateChunk(chunkId){
     let script = document.createElement('script');
     script.charset = 'utf-8';
@@ -120,4 +105,6 @@ window.webpackHotUpdate = function(chunkId,moreModules){
         prevHash = currentHash;
     }
 }
-socket.on('connect', onConnected)
+socket.on('connect', () => {
+
+});

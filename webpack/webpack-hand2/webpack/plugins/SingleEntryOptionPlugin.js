@@ -12,7 +12,8 @@ class SingleEntryOptionPlugin {
         //callback 最终回调，所有模块完成才调的
         compiler.hooks.make.tapAsync('SingleEntryOptionPlugin',(compilation,callback)=>{
             const { context, entry , name} = this;
-            // compilation.addEntry(context,entry,name,callback)
+            console.log('addEntry');
+            compilation.addEntry(context,entry,name,callback)
         });
     }
 }

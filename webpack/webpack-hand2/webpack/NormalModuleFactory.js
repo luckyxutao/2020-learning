@@ -1,9 +1,9 @@
 
-
+const NormalModule = require('./NormalModule')
 
 class normalModuleFactory{
     create(data){
-        return new NormalModule()
+        return new NormalModule(data)
     }
 }
 

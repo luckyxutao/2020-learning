@@ -1,5 +1,6 @@
 {
     "favorites.resources": [
         "node_modules/webpack"
-    ]
+    ],
+    "favorites.sortOrder": "ASC"
 }

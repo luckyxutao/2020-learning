@@ -1,6 +1,7 @@
 const path = require('path')
 const NodeEnvironmentPlugin = require('./plugins/NodeEnvironmentPlugin')
 const Compiler = require('./Compiler');
+const WebpackOptionsApply = require('./WebpackOptionsApply');
 function webpack(options){
     //工作目录
     options.context = options.context || path.resolve(process.cwd());
@@ -14,6 +15,7 @@ function webpack(options){
     }
     compiler.hooks.environment.call();
     compiler.hooks.afterEnvironment.call();
+    compiler.options = new WebpackOptionsApply().process(options, compiler);
     return compiler;
 }
 

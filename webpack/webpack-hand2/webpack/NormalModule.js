@@ -11,8 +11,8 @@ class NormalModule {
     resource: 绝对路径
     parser:解析器ast
     */
-    constructor({ name, context, rawRequest, resource, parser }) {
-        this.moduleId = null;
+    constructor({ moduleId, name, context, rawRequest, resource, parser }) {
+        this.moduleId = moduleId;
         this.name = name;
         this.context = context;
         this.rawRequest = rawRequest;

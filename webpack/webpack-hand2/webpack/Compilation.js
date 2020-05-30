@@ -53,7 +53,7 @@ class Compilation extends Tapable {
             parser
         });
         //path.posix.sep 永远指向 /
-        module.Id = '.' + path.posix.sep + path.posix.relative(this.context,module.resource);
+        module.Id = '.' + path.posix.sep + path.posix.relative(this.context, module.resource);
         this.modules.push(module);
         const afterBuild = (err) => {
             if (module.dependencies && module.dependencies.length > 0) {
@@ -69,12 +69,34 @@ class Compilation extends Tapable {
         // callback(null, module);
 
     }
-    processModuleDependencies(module,afterProcessModuleDependencies){
-        afterProcessModuleDependencies(null,module);
+    processModuleDependencies(module, afterProcessModuleDependencies) {
+        //处理依赖
+        let dependencies = module.dependencies;
+        //1要处理的依赖，2 处理依赖的函数，每处理完一个依赖，会调一次done
+        //都完成了才会调第3个参数
+        async.forEach(dependencies, (dependency, done) => {
+            let { name, context, rawRequest, resource, moduleId } = dependency;
+            const moduleFactroy = this.dependencyFactories.get(dependency.constructor);
+            const module = moduleFactroy.create({
+                name,context,rawRequest,moduleId,resource,parser
+            });
+            this.modules.push(module);
+            this._modules[moduleId] = module;
+            const afterBuild = (err)=>{
+                if(module.dependencies && module.dependencies.length > 0){
+                    this.processModuleDependencies(module,err=>{
+                        done(err,module);
+                    });
+                } else {
+                    done(err,module);
+                }
+            };
+            this.buildModule(module,afterBuild);
+        }, afterProcessModuleDependencies);
     }
     buildModule(module, afterBuild) {
         this.hooks.buildModule.call(module);
-        module.build(this,err=>{
+        module.build(this, err => {
             this.hooks.succeedModule.call(module);
             return afterBuild(err);
         });

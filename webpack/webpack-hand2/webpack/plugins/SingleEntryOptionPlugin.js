@@ -11,6 +11,7 @@ class SingleEntryOptionPlugin {
     apply(compiler) {
         compiler.hooks.compilation.tap('SingleEntryPlugin', (compilation, { normalModuleFactory }) => {
             compilation.dependencyFactories.set(SingleEntryDependency, normalModuleFactory);
+            compilation.dependencyFactories.set(Object,normalModuleFactory);
         });
         //callback 最终回调，所有模块完成才调的
         compiler.hooks.make.tapAsync('SingleEntryOptionPlugin', (compilation, callback) => {

@@ -3,6 +3,7 @@ const path = require('path');
 const Parser = require('./Parser');
 const parser = new Parser();
 const async = require('neo-async');
+const Chunk = require('./Chunk')
 class Compilation extends Tapable {
     constructor(compiler) {
         super();
@@ -26,6 +27,12 @@ class Compilation extends Tapable {
             addEntry: new SyncHook(["entry", "name"]),
             //一个模块成功后
             succeedModule: new SyncHook(["module"]),
+
+            seal: new SyncHook([]),
+			/** @type {SyncHook} */
+			beforeChunks: new SyncHook([]),
+			/** @type {SyncHook<Chunk[]>} */
+			afterChunks: new SyncHook(["chunks"]),
         }
     }
     addEntry(context, entry, name, callback) {
@@ -103,6 +110,23 @@ class Compilation extends Tapable {
         module.build(this, err => {
             return afterBuild(err);
         });
+    }
+
+    seal(afterSealCallback){
+        this.hooks.seal.call();
+        this.hooks.beforeChunks.call();
+        for(const module of this.entries){
+            const chunk  = this.addChunk(module.name);
+            chunk.entryModule = module;
+            chunk.modules = this.modules.filter(module=>module.name === chunk.name);
+        }
+        this.hooks.afterChunks.call(this.chunks);
+        afterSealCallback();
+    }
+    addChunk(name){
+        const chunk = new Chunk(name);
+        this.chunks.push(chunk);
+        return chunk;
     }
 }
 

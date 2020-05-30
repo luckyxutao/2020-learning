@@ -21,7 +21,7 @@ class Compiler extends Tapable {
             // 编译前后
             beforeCompile: new AsyncSeriesHook(["params"]),
             compile: new SyncHook(["params"]),
-
+            afterCompile: new AsyncSeriesHook(["compilation"]),
             //创建一个新的compilation
             thisCompilation: new SyncHook(["compilation", "params"]),
             //创建compilation成功
@@ -61,16 +61,20 @@ class Compiler extends Tapable {
             const compilation = this.newCompilation(params);
             //触发make-entryOption
             this.hooks.make.callAsync(compilation, err => {
-                onCompiled(null,compilation);
+                compilation.seal((err) => {
+                    this.hooks.afterCompile.callAsync(compilation, err => {
+                        return onCompiled(null, compilation);
+                    });
+                })
             });
         });
     }
-    newCompilation(params){
+    newCompilation(params) {
         const compilation = new Compilation(this);
         this.hooks.thisCompilation.call(compilation, params);
         //将compilation发广播出去
-		this.hooks.compilation.call(compilation, params);
-		return compilation;
+        this.hooks.compilation.call(compilation, params);
+        return compilation;
     }
 }
 

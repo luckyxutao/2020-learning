@@ -87,10 +87,12 @@ class Compilation extends Tapable {
             const afterBuild = () => {
                 if (module.dependencies && module.dependencies.length > 0) {
                     this.processModuleDependencies(module, err => {
+                        this.hooks.succeedModule.call(module);
                         done(null, module);
                     });
                 } else {
-                    return done(null, module);
+                    this.hooks.succeedModule.call(module);
+                    done(null, module);
                 }
             };
             this.buildModule(module, afterBuild);

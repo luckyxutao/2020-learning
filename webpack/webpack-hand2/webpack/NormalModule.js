@@ -1,4 +1,4 @@
-
+// const { Tapable, SyncHook } = require('tapable');
 class NormalModule{
     /*
     name : 入口名字
@@ -13,10 +13,13 @@ class NormalModule{
         this.rawRequest = rawRequest;
         this.resource = resource;
         this.parser = parser;
-        
+        this.dependencies = [];
         //源码
         this._source = null;
         this._ast = null;
+    }
+    build(compilation,callback){
+        callback()
     }
 }
 

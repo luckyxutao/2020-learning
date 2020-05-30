@@ -16,6 +16,7 @@ class Compilation extends Tapable {
         this.assets = [];
         this.dependencyFactories = new Map();
         this.hooks = {
+            buildModule: new SyncHook(["module"]),
             succeedEntry: new SyncHook(["entry", "name", "module"]),
             addEntry: new SyncHook(["entry", "name"]),
             //一个模块成功后
@@ -34,21 +35,39 @@ class Compilation extends Tapable {
                 return callback(null, module);
             })
     }
-    _addModuleChain(context,dependency,name,callback){
+    _addModuleChain(context, dependency, name, callback) {
         //1.创建模块
         const Dep = dependency.constructor;
         const moduleFactroy = this.dependencyFactories.get(Dep);
         const module = moduleFactroy.create({
             name, //main
             context, //
-            rawRequest:dependency.request,
-            //入口模块绝对路径
-            resource:path.posix.join(context,dependency.request),
+            rawRequest: dependency.request,
+            //入口模块绝对路径,统一为 unix(/)
+            resource: path.posix.join(context, dependency.request),
             parser
         });
+        this.modules.push(module);
+        const afterBuild = (err) => {
+            if (module.dependencies && module.dependencies.length > 0) {
+                this.processModuleDependencies(module, (err, module) => {
+                    callback(err, module);
+                });
+            } else {
+                callback(err, module);
+            }
+        };
+        this.buildModule(module, afterBuild);
         //
-        callback(null,module);
-        
+        callback(null, module);
+
+    }
+    buildModule(module, afterBuild) {
+        this.hooks.buildModule.call(module);
+        module.build(this,err=>{
+            this.hooks.succeedModule.call(module);
+            return afterBuild(err);
+        });
     }
 }
 

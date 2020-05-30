@@ -10,6 +10,6 @@ module.exports = {
         filename:'bundle.js'
     },
     plugins:[
-        new ObserverModulePlugin()
+        // new ObserverModulePlugin()
     ]
 }

@@ -18,6 +18,12 @@ class NormalModule{
         this._source = null;
         this._ast = null;
     }
+    /*
+        1. 根据路径读source
+        2. runloaders,找到所有loader(行内,post,pre,auto),进行转换得到js
+        3. js转ast
+        4. 遍历ast，找到依赖模块(require,import,import())并添加到当前dependencies中
+    */
     build(compilation,callback){
         callback()
     }

@@ -53,14 +53,16 @@ class Compilation extends Tapable {
             parser
         });
         //path.posix.sep 永远指向 /
-        module.Id = '.' + path.posix.sep + path.posix.relative(this.context, module.resource);
+        module.moduleId = '.' + path.posix.sep + path.posix.relative(this.context, module.resource);
         this.modules.push(module);
         const afterBuild = (err) => {
             if (module.dependencies && module.dependencies.length > 0) {
-                this.processModuleDependencies(module, (err, module) => {
+                this.processModuleDependencies(module, (err) => {
+                    this.hooks.succeedModule.call(module);
                     callback(err, module);
                 });
             } else {
+                this.hooks.succeedModule.call(module);
                 callback(err, module);
             }
         };
@@ -78,26 +80,25 @@ class Compilation extends Tapable {
             let { name, context, rawRequest, resource, moduleId } = dependency;
             const moduleFactroy = this.dependencyFactories.get(dependency.constructor);
             const module = moduleFactroy.create({
-                name,context,rawRequest,moduleId,resource,parser
+                name, context, rawRequest, moduleId, resource, parser
             });
             this.modules.push(module);
             this._modules[moduleId] = module;
-            const afterBuild = (err)=>{
-                if(module.dependencies && module.dependencies.length > 0){
-                    this.processModuleDependencies(module,err=>{
-                        done(err,module);
+            const afterBuild = () => {
+                if (module.dependencies && module.dependencies.length > 0) {
+                    this.processModuleDependencies(module, err => {
+                        done(null, module);
                     });
                 } else {
-                    done(err,module);
+                    return done(null, module);
                 }
             };
-            this.buildModule(module,afterBuild);
+            this.buildModule(module, afterBuild);
         }, afterProcessModuleDependencies);
     }
     buildModule(module, afterBuild) {
         this.hooks.buildModule.call(module);
         module.build(this, err => {
-            this.hooks.succeedModule.call(module);
             return afterBuild(err);
         });
     }

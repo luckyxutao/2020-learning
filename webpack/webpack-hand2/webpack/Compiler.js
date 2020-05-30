@@ -33,6 +33,7 @@ class Compiler extends Tapable {
     //编译完后的回调,外边的
     run(finalCallback) {
         const onCompiled = (err, compilation) => {
+            console.log('编译完成');
             const stats = new Stats(compilation);
             finalCallback(err, stats)
         }
@@ -60,7 +61,6 @@ class Compiler extends Tapable {
             const compilation = this.newCompilation(params);
             //触发make-entryOption
             this.hooks.make.callAsync(compilation, err => {
-                console.log('编译完成');
                 onCompiled(null,compilation);
             });
         });

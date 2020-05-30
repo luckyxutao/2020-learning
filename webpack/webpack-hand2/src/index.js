@@ -1,2 +1,2 @@
-let title = require('./title');
-console.log(title)
+let A1 = require('./A1');
+let A2 = require('./A2');

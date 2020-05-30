@@ -1,5 +1,5 @@
 const path = require('path');
-const DonePlugin = require('./DonePlugin')
+const ObserverModulePlugin = require('./webpack/plugins/ObserverModulePlugin')
 module.exports = {
     context : process.cwd(),
     mode:'development',
@@ -10,6 +10,6 @@ module.exports = {
         filename:'bundle.js'
     },
     plugins:[
-        new DonePlugin()
+        new ObserverModulePlugin()
     ]
 }

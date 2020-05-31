@@ -1,7 +1,7 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([["<%- chunkId %>"], {
-  <% for(moduleId in modules){ %>
-  "<%- moduleId %>": (function (module, exports) {
-    <%- modules[moduleId] %> 
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([["<%- chunkName %>"], {
+  <% for(mod of modules){ %>
+  "<%- mod['moduleId'] %>": (function (module, exports) {
+    <%- mod['_source'] %> 
   }),
   <%}%>
 }]);

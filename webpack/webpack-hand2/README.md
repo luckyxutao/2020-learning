@@ -14,11 +14,13 @@
     * 转AST、处理require和import
     * 生成新code
 
-## seal(生成chunk)
+### seal生成chunk（compilation）
 * 根据modules和name划分chunk
 * 生成assets
     * 根据chunks和template生成资源
     * files['main.js'], assets:{'main.js':source}
 
-## emit(compiler)
+### emit(compiler)
 *  根据compilation.assets来往磁盘写文件, outputPath
+
+## 动态导入

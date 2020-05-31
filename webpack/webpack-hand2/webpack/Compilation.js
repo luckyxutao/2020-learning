@@ -9,7 +9,8 @@ const ejs = require('ejs');
 const fs = require('fs');
 const mainTemplate = fs.readFileSync(path.join(__dirname,'templates', 'main.ejs'), 'utf8');
 const mainRender = ejs.compile(mainTemplate);
-
+const chunkTemplate = fs.readFileSync(path.join(__dirname, 'templates', 'chunk.ejs'), 'utf8');
+const chunkRender = ejs.compile(chunkTemplate);
 class Compilation extends Tapable {
     constructor(compiler) {
         super();
@@ -43,25 +44,27 @@ class Compilation extends Tapable {
             afterChunks: new SyncHook(["chunks"]),
         }
     }
-    addEntry(context, entry, name, callback) {
+    //默认async是false
+    addEntry(context, entry, name, async, callback) {
         this.hooks.addEntry.call(entry, name);
         this._addModuleChain(
             context,
             entry,
             name,
+            async,
             (err, module) => {
-                this.entries.push(module);
                 this.hooks.succeedEntry.call(entry, name, module);
                 return callback(null, module);
             })
     }
-    _addModuleChain(context, dependency, name, callback) {
+    _addModuleChain(context, dependency, name, async, callback) {
         //1.创建模块
         const Dep = dependency.constructor;
         const moduleFactroy = this.dependencyFactories.get(Dep);
         const module = moduleFactroy.create({
             name, //main
             context, //
+            async,
             rawRequest: dependency.request,
             //入口模块绝对路径,统一为 unix(/)
             resource: path.posix.join(context, dependency.request),
@@ -70,6 +73,7 @@ class Compilation extends Tapable {
         //path.posix.sep 永远指向 /
         module.moduleId = '.' + path.posix.sep + path.posix.relative(this.context, module.resource);
         this.modules.push(module);
+        this.entries.push(module);//把编译好的模块添加到入口列表里面
         const afterBuild = (err) => {
             if (module.dependencies && module.dependencies.length > 0) {
                 this.processModuleDependencies(module, (err) => {
@@ -92,10 +96,10 @@ class Compilation extends Tapable {
         //1要处理的依赖，2 处理依赖的函数，每处理完一个依赖，会调一次done
         //都完成了才会调第3个参数
         async.forEach(dependencies, (dependency, done) => {
-            let { name, context, rawRequest, resource, moduleId } = dependency;
+            let { name, context, rawRequest, resource, moduleId,async } = dependency;
             const moduleFactroy = this.dependencyFactories.get(dependency.constructor);
             const module = moduleFactroy.create({
-                name, context, rawRequest, moduleId, resource, parser
+                name, context, rawRequest, moduleId, resource, parser,async
             });
             this.modules.push(module);
             this._modules[moduleId] = module;
@@ -137,7 +141,13 @@ class Compilation extends Tapable {
             const chunk = this.chunks[i];
             chunk.files = [];
             const file = chunk.name + '.js';
-            const source = mainRender({ entryId: chunk.entryModule.moduleId, modules: chunk.modules });
+            let source;
+            if (chunk.async) {
+                source = chunkRender({ chunkName: chunk.name, modules: chunk.modules });
+            } else {
+                source = mainRender({ entryId: chunk.entryModule.moduleId, modules: chunk.modules });
+            }
+            // const source = mainRender({ entryId: chunk.entryModule.moduleId, modules: chunk.modules });
             chunk.files.push(file);
             //生成一个chunk的信息 就发射
             this.emitAsset(file, source);

@@ -3,6 +3,8 @@ const path = require('path');
 const types = require('babel-types');
 const generate = require('babel-generator').default;
 const traverse = require('babel-traverse').default;
+const async = require('neo-async');
+const SingleEntryDependency = require('./dependiencies/SingleEntryDependency');
 class NormalModule {
     /*
     name : 入口名字
@@ -11,13 +13,16 @@ class NormalModule {
     resource: 绝对路径
     parser:解析器ast
     */
-    constructor({ moduleId, name, context, rawRequest, resource, parser }) {
+    constructor({ moduleId, name, context, rawRequest, resource, parser,async }) {
         this.moduleId = moduleId;
         this.name = name;
         this.context = context;
         this.rawRequest = rawRequest;
         this.resource = resource;
         this.parser = parser;
+        //处理async
+        this.blocks = [];
+        this.async = async;
         //此模块的依赖
         this.dependencies = [];
         //转换后源码
@@ -63,12 +68,39 @@ class NormalModule {
                             moduleId:dependencyModuleId
                         });
                         node.arguments = [types.stringLiteral(dependencyModuleId)];
+                    } else if (types.isImport(nodePath.node.callee)) {//处理了import()
+                        //获取要加载的模块ID
+                        let moduleName = node.arguments[0].value;
+                        //获取扩展名
+                        let extension = moduleName.split(path.posix.sep).pop().indexOf('.') == -1 ? '.js' : '';
+                        //获取依赖模块的绝对路径
+                        let dependencyResource = path.posix.join(path.posix.dirname(this.resource), moduleName + extension);
+                        //获取依赖模块的模块ID
+                        let dependencyModuleId = '.' + path.posix.sep + path.posix.relative(this.context, dependencyResource);
+                        //获取代码块的ID
+                        debugger
+                        let dependencyChunkId = dependencyModuleId.slice(2, dependencyModuleId.lastIndexOf('.')).replace(path.posix.sep, '_', 'g');
+                        // chunkId 不需要带 .js 后缀
+                        nodePath.replaceWithSourceString(`
+                            __webpack_require__.e("${dependencyChunkId}").then(__webpack_require__.t.bind(null,"${dependencyModuleId}",7))
+                        `);
+                        this.blocks.push({
+                            context: this.context,
+                            entry: dependencyModuleId,
+                            name: dependencyChunkId,
+                            async: true
+                        });
                     }
                 }
             });
             const {code} = generate(this._ast);
             this._source = code;
-            callback();
+            //处理异步依赖模块，递归处理过错了，再处理其同级模块
+            async.forEach(this.blocks, ({ context, entry, name, async }, done) => {
+                let newEntry = new SingleEntryDependency(entry,name);
+                compilation._addModuleChain(context,newEntry, name, async, done);
+            }, callback);
+            // callback();
         });
     }
     doBuild(compilation, afterDoBuild) {

@@ -1,4 +1,5 @@
-// let A1 = require('./A1');
-// let A2 = require('./A2');
-const re = require('./title');
-console.log(re)
+document.getElementById('button').addEventListener('click',function(e){
+    import('./title').then(result => {
+        console.log(result.default);
+    });
+})

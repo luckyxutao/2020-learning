@@ -23,4 +23,10 @@
 ### emit(compiler)
 *  根据compilation.assets来往磁盘写文件, outputPath
 
-## 动态导入
+### 动态导入(支持)
+module增加了aync属性，将异步的模块作为一个新入口来对待
+* 区别:
+    * NormalModule增加了async属性
+    * ast中遇到import()，生成了name（不再是main)，并将依赖单独提取到block，按单独入口处理
+    * 根据modules的name 生成两个不同chunk
+    * createAssets，name=main是mainTemplate, 其它的chunk模板

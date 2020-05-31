@@ -9,6 +9,12 @@ module.exports = {
         path : path.resolve(__dirname,'dist'),
         filename:'bundle.js'
     },
+    module:{
+        rules:[{
+            test : /\.less/,
+            use : ['style-loader','less-loader']
+        }]
+    },
     plugins:[
         // new ObserverModulePlugin()
     ]

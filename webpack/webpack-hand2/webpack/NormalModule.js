@@ -4,6 +4,8 @@ const types = require('babel-types');
 const generate = require('babel-generator').default;
 const traverse = require('babel-traverse').default;
 const async = require('neo-async');
+const runLoaders = require('./loader-runner');
+const fs = require('fs')
 const SingleEntryDependency = require('./dependiencies/SingleEntryDependency');
 class NormalModule {
     /*
@@ -116,12 +118,33 @@ class NormalModule {
             afterDoBuild();
         });
     }
-    getSource(resourcePath, compilation, afterGetSource) {
-        const { inputFileSystem } = compilation;
-        inputFileSystem.readFile(resourcePath, 'utf8', (err, data) => {
-            //应该走loader-runnder转换
-            afterGetSource(err, data);
+    //resource资源路径
+    getSource(resource, compilation, afterGetSource) {
+        let { module: { rules } } = compilation.options;
+        let loaders = [];
+        for (let i = 0; i < rules.length; i++) {
+            let rule = rules[i];
+            if (rule.test.test(resource)) {
+                let useLoaders = rule.use;
+                loaders = [...loaders, ...useLoaders];
+            }
+        }
+        loaders = loaders.map(loader => require.resolve(path.posix.join(this.context, 'loaders', loader)));
+        //这里少了步骤，post inline normal pre
+        let source = runLoaders({
+            resource,
+            loaders,
+            context: {},
+            readResource: fs
+        }, function (err, result) {
+            afterGetSource(err, result);
         });
+        // return source;
+        // const { inputFileSystem } = compilation;
+        // inputFileSystem.readFile(resourcePath, 'utf8', (err, data) => {
+        //     //应该走loader-runnder转换
+        //     afterGetSource(err, data);
+        // });
     }
 }
 

@@ -1,12 +1,21 @@
+### 解析合并参数
+* 从命令行读取参数及配置文件合并到webpack默认的配置文件
+* WebpackOptionDefaulter并优化
 
-### 编译
-生成所有modules及main
+### 编译（compilation）
+* 从入口编译，将所有模块及依赖都放到的modules:[NormalModule]
+    * NormalModule主要有name（划分chunk依据）和_source
 
-### seal(生成chunk)
-* 根据modules和名字划分chunk
+* NormalModule编译
+    * 源文件 = 读取源文件 -> run-loaders，目标是js,webpack可识别
+    * 转AST、处理require和import
+    * 生成新code
+
+## seal(生成chunk)
+* 根据modules和name划分chunk
 * 生成assets
-    * 根据chunk数组template生成资源
-    * 产物 files['main.js'], assets:{'main.js':source}
+    * 根据chunks和template生成资源
+    * files['main.js'], assets:{'main.js':source}
 
-### emit(compiler)
-*  根据files和assets来生成物理文件
+## emit(compiler)
+*  根据compilation.assets来往磁盘写文件, outputPath

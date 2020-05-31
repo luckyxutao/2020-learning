@@ -1,9 +1,9 @@
 
 class Chunk{
-    constructor(name){
-        this.name = name;
+    constructor(module){
+        this.name = module.name;
         //入口模块，文件名称
-        this.entryModule = null;
+        this.entryModule = module;
         //
         this.modules = null;
         this.files = [];

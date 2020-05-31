@@ -20,7 +20,7 @@ class NormalModule {
         this.parser = parser;
         //此模块的依赖
         this.dependencies = [];
-        //源码
+        //转换后源码
         this._source = null;
         this._ast = null;
     }
@@ -65,7 +65,9 @@ class NormalModule {
                         node.arguments = [types.stringLiteral(dependencyModuleId)];
                     }
                 }
-            })
+            });
+            const {code} = generate(this._ast);
+            this._source = code;
             callback();
         });
     }

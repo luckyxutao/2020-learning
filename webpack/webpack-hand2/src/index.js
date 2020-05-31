@@ -1,3 +1,4 @@
 // let A1 = require('./A1');
 // let A2 = require('./A2');
-require('./title')
+const re = require('./title');
+console.log(re)

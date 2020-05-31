@@ -1,0 +1,7 @@
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([["<%- chunkId %>"], {
+  <% for(moduleId in modules){ %>
+  "<%- moduleId %>": (function (module, exports) {
+    <%- modules[moduleId] %> 
+  }),
+  <%}%>
+}]);

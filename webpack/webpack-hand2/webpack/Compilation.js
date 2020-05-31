@@ -3,7 +3,13 @@ const path = require('path');
 const Parser = require('./Parser');
 const parser = new Parser();
 const async = require('neo-async');
-const Chunk = require('./Chunk')
+const Chunk = require('./Chunk');
+
+const ejs = require('ejs');
+const fs = require('fs');
+const mainTemplate = fs.readFileSync(path.join(__dirname,'templates', 'main.ejs'), 'utf8');
+const mainRender = ejs.compile(mainTemplate);
+
 class Compilation extends Tapable {
     constructor(compiler) {
         super();
@@ -19,7 +25,9 @@ class Compilation extends Tapable {
         //模块id ./src/index.js
         //key是模块id,value= 模块的代码
         this._modules = {};
-        this.assets = [];
+        // this.assets = [];
+        this.files = [];  //生成的文件
+        this.assets = {}; //资源 
         this.dependencyFactories = new Map();
         this.hooks = {
             buildModule: new SyncHook(["module"]),
@@ -32,7 +40,7 @@ class Compilation extends Tapable {
 			/** @type {SyncHook} */
 			beforeChunks: new SyncHook([]),
 			/** @type {SyncHook<Chunk[]>} */
-			afterChunks: new SyncHook(["chunks"]),
+            afterChunks: new SyncHook(["chunks"]),
         }
     }
     addEntry(context, entry, name, callback) {
@@ -116,12 +124,28 @@ class Compilation extends Tapable {
         this.hooks.seal.call();
         this.hooks.beforeChunks.call();
         for(const module of this.entries){
-            const chunk  = this.addChunk(module.name);
-            chunk.entryModule = module;
+            const chunk  = this.addChunk(module);
             chunk.modules = this.modules.filter(module=>module.name === chunk.name);
         }
         this.hooks.afterChunks.call(this.chunks);
-        afterSealCallback();
+        //开始seal
+        this.createChunkAssets();
+        afterSealCallback();//封装结束
+    }
+    createChunkAssets(){
+        for (let i = 0; i < this.chunks.length; i++) {
+            const chunk = this.chunks[i];
+            chunk.files = [];
+            const file = chunk.name + '.js';
+            const source = mainRender({ entryId: chunk.entryModule.moduleId, modules: chunk.modules });
+            chunk.files.push(file);
+            //生成一个chunk的信息 就发射
+            this.emitAsset(file, source);
+        }
+    }
+    emitAsset(file, source) {
+        this.assets[file] = source;
+        this.files.push(file);
     }
     addChunk(name){
         const chunk = new Chunk(name);

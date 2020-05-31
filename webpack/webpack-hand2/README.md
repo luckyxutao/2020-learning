@@ -30,3 +30,9 @@ module增加了aync属性，将异步的模块作为一个新入口来对待
     * ast中遇到import()，生成了name（不再是main)，并将依赖单独提取到block，按单独入口处理
     * 根据modules的name 生成两个不同chunk
     * createAssets，name=main是mainTemplate, 其它的chunk模板
+
+### 支持引入第三方库
+* 在NormalModule遍历AST处理import和require时做判断，如果路径不是以.开始的，直接去node_modules找
+    ```js
+    dependencyResourceAbsPath = require.resolve(path.posix.join(this.context, 'node_modules', modulName));
+    ```

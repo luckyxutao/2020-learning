@@ -53,10 +53,16 @@ class NormalModule {
                         //[".", "title"]
                         let extension = modulName.split(path.posix.sep).pop().indexOf('.') == -1 ? '.js' : '';
                         //获取依赖模块绝对路径
-                        let dependencyResourceAbsPath = path.posix.join(
-                            path.posix.dirname(this.resource),
-                            modulName + extension
-                        );
+                        let dependencyResourceAbsPath;
+                        if(modulName.startsWith('.')){
+                            dependencyResourceAbsPath = path.posix.join(
+                                path.posix.dirname(this.resource),
+                                modulName + extension
+                            );
+                        } else {//第三方模块
+                            dependencyResourceAbsPath = require.resolve(path.posix.join(this.context, 'node_modules', modulName));
+                            dependencyResourceAbsPath = dependencyResourceAbsPath.replace(/\\/g, path.posix.sep);
+                        }
                         //./src/title.js
                         let dependencyModuleId = '.' + path.posix.sep + path.relative(this.context,dependencyResourceAbsPath);
                         this.dependencies.push({

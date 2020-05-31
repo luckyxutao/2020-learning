@@ -37,3 +37,7 @@ module增加了aync属性，将异步的模块作为一个新入口来对待
     dependencyResourceAbsPath = require.resolve(path.posix.join(this.context, 'node_modules', modulName));
     ```
 ### 支持loader
+支持了基本的less、style
+* 缺失的
+    * 未支持@import
+    * 未支持post inline normal pre规则处理

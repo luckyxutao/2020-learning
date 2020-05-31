@@ -7,6 +7,9 @@
     * NormalModule主要有name（划分chunk依据）和_source
 
 * NormalModule编译
+    * resolve&resolveLoader
+        * 找到模块绝对路径
+        * 找到loader的绝对路径，过滤及调整loaders的顺序
     * 源文件 = 读取源文件 -> run-loaders，目标是js,webpack可识别
     * 转AST、处理require和import
     * 生成新code

@@ -1,6 +1,6 @@
-import { TAG_ROOT, ELEMENT_TEXT, TAG_TEXT, TAG_HOST, PLACEMENT, UPDATE, DELETION, TAG_CLASS } from "./constant";
+import { TAG_ROOT, ELEMENT_TEXT, TAG_TEXT, TAG_HOST, PLACEMENT, UPDATE, DELETION, TAG_CLASS, TAG_FUNCTION } from "./constant";
 import { setProps } from './utils';
-import { UpdateQueue } from "./UpdateQueue";
+import { UpdateQueue, Update } from "./UpdateQueue";
 /*
 1. 从根节点开始渲染和调度
 2. diff阶段可以暂停
@@ -11,6 +11,11 @@ let nextUnitOfWork = null;
 let workInProgressRoot = null;
 let currentRoot = null;//渲染成功后，当前TREE
 let deletions = [];//删除节点不在effectList
+
+//当前工作中的fiber
+let workInProgressFiber = null;
+let hookIndex = 0;
+
 /*
 1. 生成fiber树
 2. 收集effectlist
@@ -42,6 +47,7 @@ export function scheduleRoot(rootFiber) {
     nextUnitOfWork = workInProgressRoot;
 }
 function performUnitOfWork(currentFiber) {
+
     //currentFiber还没有child
     beginWork(currentFiber);
     //有child
@@ -110,6 +116,8 @@ function beginWork(currentFiber) {
         updateHost(currentFiber);
     } else if(currentFiber.tag === TAG_CLASS){
         updateClassComponent(currentFiber);
+    } else if(currentFiber.tag === TAG_FUNCTION){
+        updateFunctionComponent(currentFiber);
     }
 }
 
@@ -125,8 +133,20 @@ function createDOM(currentFiber) {
 }
 
 function updateDOM(stateNode, oldProps, newProps) {
-    setProps(stateNode, oldProps, newProps);
+    if (stateNode && stateNode.setAttribute) {
+        setProps(stateNode, oldProps, newProps);
+    }
 }
+
+function updateFunctionComponent(currentFiber){
+    workInProgressFiber = currentFiber;
+    hookIndex = 0;
+    workInProgressFiber.hooks = [];
+
+    const renderedElement =  currentFiber.type(currentFiber.props);
+    reconcilerChildren(currentFiber,[renderedElement]);
+}
+
 function updateClassComponent(currentFiber){
     if(!currentFiber.stateNode){
         //指向class实例
@@ -190,6 +210,8 @@ function reconcilerChildren(currentFiber, newChildren) {
             tag = TAG_HOST
         } else if(newChild && typeof newChild.type === 'function' && newChild.type.prototype.isReactComponent) {
             tag = TAG_CLASS;
+        } else if(newChild && typeof newChild.type === 'function') {
+            tag = TAG_FUNCTION;
         }
         //说明新旧fiber类型相同
         if(sameType){
@@ -297,11 +319,15 @@ function commitWork(currentFiber) {
     let returnDOM = returnFiber.stateNode;
     if (currentFiber.effectTag === PLACEMENT) {//处理了添加i
         let nextFiber = currentFiber;
-        //向下找，找到一个真实节点
-        while(nextFiber.tag !== TAG_HOST && nextFiber.tag !== TAG_ROOT && nextFiber.tag !== TAG_TEXT){
-            nextFiber = nextFiber.child;
+        //只有TAG_HOST TAG_TEXT  TG_ROOT则找dom,
+        if(nextFiber.tag !== TAG_FUNCTION && nextFiber.tag !== TAG_CLASS){
+            //向下找，找到一个真实节点
+            while(nextFiber.tag !== TAG_HOST && nextFiber.tag !== TAG_ROOT && nextFiber.tag !== TAG_TEXT){
+                nextFiber = nextFiber.child;
+            }
+            returnDOM.appendChild(nextFiber.stateNode);
         }
-        returnDOM.appendChild(nextFiber.stateNode);
+
     } else if (currentFiber.effectTag === DELETION) {
         // returnDOM.removeChild(currentFiber.stateNode);
         commitDeletion(currentFiber,returnDOM);
@@ -328,6 +354,42 @@ function commitDeletion(currentFiber,returnDOM){
     } else {
         commitDeletion(currentFiber.child,returnDOM)
     }
+}
+/*
+workInProgressFiber = currentFiber;
+hookIndex = 0;
+workInProgressFiber.hooks = [];
+
+*/
+
+export function useState(state){
+    return useReducer(null,state)
+}
+
+export function useReducer(reducer,initialValue){
+    debugger
+    // let oldHook;
+    let newHook = workInProgressFiber.alternate && workInProgressFiber.alternate.hooks
+    && workInProgressFiber.alternate.hooks[hookIndex];
+    if(newHook){
+        newHook.state = newHook.updateQueue.forceUpdate(newHook.state);
+    } else {
+        newHook = {
+            state : initialValue,
+            updateQueue: new UpdateQueue()
+        }
+    }
+    // const dispatch=null;
+    const dispatch = action=>{// {type:'ADD'}
+        debugger
+        let payload = reducer? reducer(newHook.state,action) : action;
+        newHook.updateQueue.enqueueUpdate(
+            new Update(payload)
+        );
+        scheduleRoot();
+    }
+    workInProgressFiber.hooks[hookIndex++] = newHook;
+    return [newHook.state,dispatch]
 }
 
 requestIdleCallback(workLoop, { timeout: 500 });

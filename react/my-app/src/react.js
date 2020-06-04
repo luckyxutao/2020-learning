@@ -41,6 +41,6 @@ Component.prototype.isReactComponent = {};
 export default {
     createElement,
     Component,
-    // useReducer,
-    // useState
+    useReducer,
+    useState
 }

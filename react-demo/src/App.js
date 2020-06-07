@@ -1,52 +1,52 @@
-import React from "react";
-import { render } from "react-dom";
+import React, { Component} from "react";
 
-const CountContext = React.createContext(1);
-
-function Button(props) {
-  console.log("button render");
-  return <button {...props}>{props.count}</button>;
-}
-
-class CountedButton extends React.Component {
-  static contextType = CountContext;
-  render() {
-    console.log('counterButton rendered')
-    return <Button {...this.props} count={this.context.count} />;
-  }
-}
-
-class Toolbar extends React.PureComponent {
-  render() {
-    console.log("Toolbar render");
-    return (
-      <div>
-        <CountedButton />
-      </div>
-    );
-  }
-}
-
-export default class App extends React.Component {
+class Suspense extends React.Component {
   state = {
-    updateCount: 0
-  };
+    promise: null
+  }
+
+  componentDidCatch(e) {
+    debugger
+    if (e instanceof Promise) {
+      this.setState({
+        promise: e
+      }, () => {
+        e.then(() => {
+          debugger
+          this.setState({
+            promise: null
+          })
+        })
+      })
+    }
+  }
 
   render() {
-    console.log("app render", this.state.updateCount);
+    const { fallback, children } = this.props
+    debugger
+    const { promise } = this.state
+    return <>
+    {children}
+    </>
+  }
+}
+
+
+const HomeComponent = React.lazy(()=>import('./Home'));
+debugger
+export default class App extends React.Component {
+  getData(){
+    return new Promise((resolve,reject)=>{
+      setTimeout(() => {
+        resolve("数据加载完毕");
+      }, 2000);
+    });
+  }
+  render() {
     return (
-      <CountContext.Provider value={{ count: this.state.updateCount }}>
-        <Toolbar />
-        <button
-          onClick={() =>
-            this.setState(state => ({
-              updateCount: state.updateCount + 1
-            }))
-          }
-        >
-          update
-        </button>
-      </CountContext.Provider>
+      <Suspense fallback={<div>Loading...</div>}>
+        <HomeComponent />
+      </Suspense>
     );
   }
 }

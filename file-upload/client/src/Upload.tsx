@@ -68,6 +68,7 @@ function Upload() {
         let partials: Part[] = createChunks(currentFile);
         //通过webworker子进程计算哈希
         let fileHasn = await calculateHash(partials);
+        debugger
         let lastDotIndex = currentFile.name.lastIndexOf('.');
         let extName = currentFile.name.slice(lastDotIndex);
         let filename = `${fileHasn}${extName}`;

@@ -367,7 +367,6 @@ export function useState(state){
 }
 
 export function useReducer(reducer,initialValue){
-    debugger
     // let oldHook;
     let newHook = workInProgressFiber.alternate && workInProgressFiber.alternate.hooks
     && workInProgressFiber.alternate.hooks[hookIndex];

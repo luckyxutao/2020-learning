@@ -96,10 +96,17 @@ class Counter extends React.Component {
     //   number:this.state.number+1
     // })
   }
+  rootClick=()=>{
+    console.log('ggggg');
+    
+  }
   render() {
     // return <About />
       return (
-        <div style={{ padding: '20px'}}>
+        <div onClickCapture={()=>{
+          console.log('root ClickCapture');
+          
+        }} onClick={this.rootClick} style={{ padding: '20px'}}>
           <span>{this.state.number}</span>
           <button style={{backgroundColor:'red' }} onClick={this.onClick}>button</button>
         </div>
